@@ -3,9 +3,9 @@
 %   sigAC and mMech will be generated if not given as arguments
 %
 
-function rslt = pickleEngine(pickle, pos, f, sigAC, mMech, sigDC)
+function rslt = lentickleEngine(lentickle, pos, f, sigAC, mMech)
   
-  pp = pickle.param;
+  pp = lentickle.param;
 
   
   % sizes of things
@@ -17,38 +17,38 @@ function rslt = pickleEngine(pickle, pos, f, sigAC, mMech, sigDC)
   
   % call tickle to compute fields and TFs
   if( nargin < 5 )
-    [sigAC, mMech] = tickle01(pickle.opt, pos, f);
+    [sigAC, mMech] = tickle(lentickle.opt, pos, f);
   end
   
-  if( nargin < 6 )
-    [fDC, sigDC] = tickle(pickle.opt, pos);
-  end
+  %if( nargin < 6 )
+  %  [fDC, sigDC] = tickle(lentickle.opt, pos);
+  %end
   
   % get loop TFs
   hCtrl = pickleMakeFilt(f, pp.ctrlFilt);
   hMirr = pickleMakeFilt(f, pp.mirrFilt);
   hPend = pickleMakeFilt(f, pp.pendFilt);
   
-  %%%%%%%%%%%%%%%%% make spot matrix
-  % determine beam sizes on each optic
-  vBasis = getAllFieldBases(pickle.opt);
-  nLinkMirr = zeros(Nmirr, 1);
-  for n = 1:Nmirr
-    nLinkMirr(n) = getFieldProbed(pickle.opt, pp.vSpotSig(n));
-  end
-  spot_z0 = imag(vBasis(nLinkMirr, 2));
-  spot_z = real(vBasis(nLinkMirr, 2));
-  
-  % DC power on each mirr
-  spot_P = sigDC(pp.vSpotSig);
-  
-  % make matrix from probes to spot locations (in meters)
-  probeSpot = sparse(Nmirr, Nprobe);
-  wBeam = zeros(Nmirr, 1);
-  for n = 1:Nmirr
-    [Rbeam, wBeam(n)] = beamRW(spot_z0(n), spot_z(n), pickle.opt.lambda);
-    probeSpot(n, pp.vSpotSig(n)) = wBeam(n) / spot_P(n);
-  end
+%  %%%%%%%%%%%%%%%%% make spot matrix
+%  % determine beam sizes on each optic
+%  vBasis = getAllFieldBases(pickle.opt);
+%  nLinkMirr = zeros(Nmirr, 1);
+%  for n = 1:Nmirr
+%    nLinkMirr(n) = getFieldProbed(pickle.opt, pp.vSpotSig(n));
+%  end
+%  spot_z0 = imag(vBasis(nLinkMirr, 2));
+%  spot_z = real(vBasis(nLinkMirr, 2));
+%  
+%  % DC power on each mirr
+%  spot_P = sigDC(pp.vSpotSig);
+%  
+%  % make matrix from probes to spot locations (in meters)
+%  probeSpot = sparse(Nmirr, Nprobe);
+%  wBeam = zeros(Nmirr, 1);
+%  for n = 1:Nmirr
+%    [Rbeam, wBeam(n)] = beamRW(spot_z0(n), spot_z(n), pickle.opt.lambda);
+%    probeSpot(n, pp.vSpotSig(n)) = wBeam(n) / spot_P(n);
+%  end
   %%%%%%%%%%%%%%%%% initialize result matrices
   rslt.Nfreq = Nfreq;
   rslt.Nsens = Nsens;
@@ -87,14 +87,12 @@ function rslt = pickleEngine(pickle, pos, f, sigAC, mMech, sigDC)
   for n = 1:Nfreq
     % use maps to produce mirrSens
     mirrSens = probeSens * sigAC(:, :, n) * mirrDrive;
-    size(mirrSens);
     
     % make piecewise TFs
     errCtrl = diag(hCtrl(n, :));
     ctrlCorr = diag(hMirr(n, :)) * dofMirr;
     corrMirr = diag(hPend(n, :));
-    size(corrMirr);
-    size(mirrSens);
+
     % make half-loop pairs
     corrSens = mirrSens * corrMirr;
     sensCorr = ctrlCorr * errCtrl * sensDof;
@@ -124,14 +122,14 @@ function rslt = pickleEngine(pickle, pos, f, sigAC, mMech, sigDC)
     
     rslt.mMirr(:, :, n) = driveMirr * mMech(:, :, n) * mirrDrive;
     
-    rslt.mirrSpot(:, :, n) = probeSpot * sigAC(:, :, n) * mirrDrive;
+%    rslt.mirrSpot(:, :, n) = probeSpot * sigAC(:, :, n) * mirrDrive;
   end
 
   % copy some parameter matrices
   rslt.mirrDof = pp.mirrDof;
-  rslt.probeSpot = full(diag(probeSpot(:, pp.vSpotSig)));
-  rslt.wBeam = wBeam;
-  rslt.spotPower = spot_P;
+%  rslt.probeSpot = full(diag(probeSpot(:, pp.vSpotSig)));
+%  rslt.wBeam = wBeam;
+%  rslt.spotPower = spot_P;
   rslt.nLinkMirr = nLinkMirr;
   
   % test point names
@@ -145,22 +143,3 @@ function rslt = pickleEngine(pickle, pos, f, sigAC, mMech, sigDC)
     nameTmp(1) = upper(nameTmp(1));
     rslt.testPointsUpper{n} = nameTmp;
   end
-  
-  % convert to FRD objects?
-  %rslt.sensErr = frd(rslt.sensErr);
-  
-  %%%%%%%%%%%%%%%%%%%%
-%   % use sensing matrix and control filters to make sensCtrl
-%   for m = 1:Nsens
-%     sensCtrl_n(:, m) = hCont(n, :)' .* sensErr(:, m);
-%   end
-% 
-%   % apply control matrix and mirror compensation filters to make ctrlCorr
-%   for m = 1:Ndof
-%     ctrlCorr_n(:, m) = hMirr(n, :)' .* ctrlMirr(:, m);
-%   end
-% 
-%   % combine mechanical and optical TFs to make corrSens
-%   for m = 1:Nmirr
-%     corrSens_n(m, :) = mirrSens_n(m, :) .* hPend(n, :);
-%   end
