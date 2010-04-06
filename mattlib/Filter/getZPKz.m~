@@ -1,0 +1,18 @@
+%
+% [zz, pz, kz] = getZPKz(mf, fs)
+%
+% get Z-domain zeros and poles for mf
+%
+% Additional arguments for the bilinear transform may be passed 
+% after fs.  (See also: bilinear)
+%
+
+function [zz, pz, kz] = getZPKz(mf, fs, varargin)
+
+  [zs, ps, ks] = getZPKs(mf);
+  [zz, pz, kz] = bilinear(zs, ps, ks, fs, varargin{:});
+
+  if( abs(imag(kz) / real(kz)) > 1e-10 )
+   error('Imaginary gain factor.');
+  end
+  kz = real(kz);
