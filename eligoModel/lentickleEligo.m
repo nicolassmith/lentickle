@@ -1,8 +1,5 @@
-function pickle = pickleEligo(opt)
-% Define all the matrices for noise budget 
-% (a kind of looptickle for angles)
-% The names of matrices are defined as inputOutput (fromTo).
-% Current definition of DOF = {'CE+CI', 'CE-CI', 'DE+DI', 'DE-DY', 'PR', 'BS', 'IBtx'};
+function lentickle = lentickleEligo(opt)
+% Defines matricies and filters for lentickle model 
 % The matrices defined here are:
 
 % probeSens - from optickle probes to the sensors used
@@ -13,17 +10,21 @@ function pickle = pickleEligo(opt)
 % pendFilt - pendulum TF for each mirror (from penultimum mass actuator to mirror motion);
 % mirrDrive - map from mirrors to Optickle drive indeces
 
-% get the serial numbers of probes
-% Current sensors used 
-nC1 = getProbeNum(opt, 'REFL_B I2');
-nC2 = getProbeNum(opt, 'POX_A I1');
-nD1 = getProbeNum(opt, 'AS_A Q1'); 
-nD2 = getProbeNum(opt, 'POX_A Q1');
-nPRM = getProbeNum(opt, 'REFL_A I2');
+% probe serial numbers of relevant sensors
+nASI =  getProbeNum(opt, 'AS_A I1');
+nASQ =  getProbeNum(opt, 'AS_A Q1');
+nPOXI =  getProbeNum(opt, 'POX_A I1');
+nPOXQ =  getProbeNum(opt, 'POX_A Q1');
+nREF1I =  getProbeNum(opt, 'REFL_A I1');
+nREF1Q =  getProbeNum(opt, 'REFL_A Q1');
+nREF2I =  getProbeNum(opt, 'REFL_A I2');
+nREF2Q =  getProbeNum(opt, 'REFL_A Q2');
+nOMCPD =  getProbeNum(opt, 'OMCt_A DC');
+
+
 
 % get the serial numbers of optics
-% just these for now... others are BS, PM and AM
-pp.mirrNames = {'EX', 'EY', 'IX', 'IY', 'PR'};
+pp.mirrNames = {'EX', 'EY', 'IX', 'IY', 'BS','PR','AM','PM'};
 
 pp.Nmirr = numel(pp.mirrNames);
 pp.vMirr = zeros(1, pp.Nmirr);
@@ -33,8 +34,8 @@ for n=1:pp.Nmirr
   pp.driveMirr(n, pp.vMirr(n)) = 1;
 end
 
-% Only 5 dof and 5 mirr (left out DOFs BS, IBtx, IBdx)
-pp.dofNames = {'CommUnst', 'CommStable', 'DiffUnst', 'DiffStable', 'PR'};
+% Degrees of freedom in the control basis
+pp.dofNames = {'DARM','MICH','PRC','CM'};
 pp.Ndof = numel(pp.dofNames);
 
 % index of each DOF, by name
@@ -42,29 +43,25 @@ for n = 1:pp.Ndof
   pp.(pp.dofNames{n}) = n;
 end
 
-% drive matrix
-r = 0.866;
-pp.dofMirr =       [1      r     1     r     0     
-                    1      r    -1    -r     0     
-                    r     -1     r    -1     0    
-                    r     -1    -r     1     0    
-                    0      0     0     0     1  ];
-
-
-%           C1           D1            C2            D2 
-%   IX    0.53081      0.38489       0.60012       0.4572
-%   IY    0.37325     -0.52741       0.45276     -0.59791
-%   EX   0.62154      0.44548      -0.52623     -0.39964
-%   EY   0.43883     -0.61256      -0.39735      0.52319
-% normalization by 0.53, pay attention to the order of the mirrors!                
+% drive matrix (LSC output matrix)
+d = 1.64;
+%                    DARM MICH PRC CM
+pp.dofMirr =       [  1    0    0   0  ; %EX
+                     -1    0    0   0  ; %EY
+                      0    0    0   0  ; %IX
+                      0    0    0   0  ; %IY
+                      0    1    0   0  ; %BS
+                      0   -d   -1   0  ; %PR
+                      0    0    0   0  ; %AM
+                      0    0    0   1 ]; %PM
                           
 pp.mirrDrive = pp.driveMirr';
 pp.dofDrive  = pp.mirrDrive * pp.dofMirr;
-pp.mirrDof   = inv(pp.dofMirr);
+pp.mirrDof   = pinv(pp.dofMirr); %changed inv to pinv
 pp.driveDof  = pp.mirrDof * pp.driveMirr ;
 
 % Control Loop input ports and input matrix
-pp.vSens = [ nC1, nC2, nD1, nD2, nPRM];
+pp.vSens = [nASI,nASQ,nPOXI,nPOXQ,nREF1I,nREF1Q,nREF2I,nREF2Q,nOMCPD];
 
 pp.probeName = getProbeName(opt, pp.vSens);
 for n = 1 : pp.Ndof
@@ -78,161 +75,90 @@ for n=1:pp.Nsens
   pp.probeSens(n, pp.vSens(n)) = 1;
 end
 
-% Now I have only 5 dof 
- 
-% Full inversion
-% pp.dofSens = [    988.6       299.86       31.313      -46.692      -384.51
-%                   983.53      -1169.8       88.916    0.0027652      -1145.2
-%                  -1655       2073.2       -16078      -4905.4       1887.8
-%                   49.305      -70.983       151.68      -208.89      -69.352
-%                  -288.61         1053       49.283      -48.227       1460.2 ];
- 
-             pp.dofSens = [    988.6       0        0          0       -384.51
-                               983.53      -1169.8      0          0       -1145.2
-                               0               0      -16078      0    0
-                               0              0        151.68     -208.89       0
-                               0             1053      0             0       1460.2 ];
-             
-% standard
-%pp.gainSens = [0.83795       0.4584      0.99961      0.32514      0.67839];
- 
-pp.gainSens = [0.83795       0.4584      0.99961      0.32514      0.67839];
+% input matrix
+%              DARM MICH PRC CM
+pp.dofSens = [  0    0    0   0  ; %ASI
+                0    0    0   0  ; %ASQ
+                0    0    1   0  ; %POXI
+                0    1    0   0  ; %POXQ
+                0    0    0   1  ; %REFL1I
+                0    0    0   0  ; %REFL1Q
+                0    0    0   0  ; %REFL2I
+                0    0    0   0  ; %REFL2Q
+                1    0    0   0  ];%OMCPD_SUM
 
-%Test
-% pp.dofSens = [    988.6       299.86          0          0      -384.51
-%                   983.53      -1169.8         0          0      -1145.2
-%                     0            0      -16078      -4905.4       0
-%                     0            0       151.68      -208.89     0
-%                     0             0           0         0      1460.2 ];
-%              
-%  pp.gainSens = [ 0.91972      0.83361       0.8203      0.52122      0.50878];           
- 
-% pp.dofSens = [    988.6       299.86          0          0      -384.51
-%                   983.53      -1169.8         0          0      -1145.2
-%                     0            0      -16078      -4905.4      0
-%                     0            0       151.68      -208.89     0
-%                     0             0           0         0      1460.2 ];
+               % nASI,nASQ,nPOXI,nPOXQ,nREF1I,nREF1Q,nREF2I,nREF2Q,nOMCPD   
+pp.gainSens = [     1    1 1.09e8 123.6 -1e7      1      1      1   -1/3.454]; 
 
-
-
-pp.sensDof_temp = inv(pp.dofSens); 
-
-
-% pp.gainSens = [ 0.91972      0.83361       0.8203      0.52122      0.51434];
-pp.gainSens = [ 0.7      0.4      0.8      0.52122      0.51434]; 
+pp.sensDof_temp = pinv(pp.dofSens); %pinv
 
 for n = 1 : pp.Ndof
-  pp.sensDof(n,:) = pp.gainSens(n) .* pp.sensDof_temp(n,:);
+  pp.sensDof(n,:) = pp.gainSens .* pp.sensDof_temp(n,:); %%%bug here (n) argument on gainSens
 end
                  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Specify the control loop filters (to be tuned)
-pp.gains = [ 1,  1,  1,  1,  1];
-pp.freqs = [10, 10, 10, 10, 10];
 
-%pp.filtC1 = filtZPG([filtRes(1.5, 0.7)],[0;filtRes(0, 0.7);filtRes(50, 2)], pp.gains(1), pp.freqs(1));  
+pp.ctrlDARM =...  %from foton
+    filtZPK([3.13147-1i*5.118;3.13147+1i*5.118;0.397453-1i*11.9034;...
+    0.397453+1i*11.9034;1.6224-1i*16.106;1.6224+1i*16.106;...
+    0.436471-1i*17.4345;0.436471+1i*17.4345;0.443239-1i*17.5444;...
+    0.443239+1i*17.5444;0.441977-1i*17.6545;0.441977+1i*17.6545;...
+    8.2249-1i*15.6821;8.2249+1i*15.6821;8.03813+1i*16.2668;...
+    8.03813-1i*16.2668;1.87622-1i*18.6257;1.87622+1i*18.6257;16-1i*27.7129;...
+    16+1i*27.7129;3.60782-1i*34.6879;3.60782+1i*34.6879;10;100;100],...
+    [0.313147-1i*5.99182;0.313147+1i*5.99182;4.04244-1i*4.88795;...
+    4.04244+1i*4.88795;0.0125686-1i*11.91;0.0125686+1i*11.91;...
+    1.67444+1i*11.8005;1.67444-1i*11.8005;0.0513048+1i*16.1874;...
+    0.0513048-1i*16.1874;0.0138024+1i*17.44;0.0138024-1i*17.44;...
+    0.0443239+1i*17.5499;0.0443239-1i*17.5499;0.0139765-1i*17.66;...
+    0.0139765+1i*17.66;0.0593314+1i*18.7199;0.0593314-1i*18.7199;...
+    0.641572+1i*34.8691;0.641572-1i*34.8691;443.007-1i*896.518;...
+    443.007+1i*896.518;2828.43+1i*2828.43;2828.43-1i*2828.43;0;0;200],...
+    13130.1);
 
-pp.filtRes1 = filtZPG([filtRes(1.4, 0.8)],[filtRes(1, 10)], 1, 10);
-pp.filtRes10 = filtZPG([filtRes(1.6, 0.8)],[filtRes(1.354, 10)], 1, 10);
-pp.filtRes2 = filtZPG([filtRes(2.269, 1)],[filtRes(2.269, 5)], 1, 10);
+pp.ctrlMICH = ... %from foton
+    filtZPK([0.652205+i*0.983376;0.652205-i*0.983376;0.759539+i*1.95783;0.759539-i*1.95783;10+i*17.3205;...
+    10-i*17.3205;0+i*329.395;0-i*329.395;0+i*329.584;0-i*329.584;0+i*329.773;0-i*329.773;1;3],...
+    [0.163827+i*1.16857;0.163827-i*1.16857;0.190788+i*2.09132;0.190788-i*2.09132;4.82796+i*10.8438;...
+    4.82796-i*10.8438;88.6014+i*179.304;88.6014-i*179.304;0.207419+i*329.031;0.207419-i*329.031;...
+    0.75946+i*329.583;0.75946-i*329.583;0.208118+i*330.138;0.208118-i*330.138;0],2.83899);
 
-pp.filtRes1PR = filtZPG([filtRes(1.617, 1)],[filtRes(1.617, 20)], 1, 10);
-pp.filtRes2PR = filtZPG([filtRes(2.5, 1)],[filtRes(2.5, 10)], 1, 10);
+pp.ctrlPRC = ... %from foton
+    filtZPK([0.255452-i*1.20318;0.255452+i*1.20318;1.34397-i*6.10379;1.34397+i*6.10379;2.41535-i*6.57009;...
+    2.41535+i*6.57009;0.394014+i*11.6934;0.394014-i*11.6934;0.40075+i*11.8933;0.40075-i*11.8933;...
+    0.61386+i*12.1345;0.61386-i*12.1345;0.417588+i*12.393;0.417588-i*12.393;0.424323-i*12.5929;...
+    0.424323+i*12.5929;0.431058-i*12.7927;0.431058+i*12.7927;0.454604-i*17.9943;0.454604+i*17.9943;...
+    10+i*18;10-i*18;0+i*329.395;0-i*329.395;0+i*329.584;0-i*329.584;0+i*329.773;0-i*329.773;1;5;7],...
+    [0.0454266-i*1.22916;0.0454266+i*1.22916;0.33759-i*6.24088;0.33759+i*6.24088;0.341177-i*6.99168;...
+    0.341177+i*6.99168;1.43751-i*11.4098;1.43751+i*11.4098;0.0394014-i*11.6999;0.0394014+i*11.6999;...
+    0.040075+i*11.8999;0.040075-i*11.8999;0.061386+i*12.1498;0.061386-i*12.1498;0.0417588+i*12.3999;...
+    0.0417588-i*12.3999;0.0424323+i*12.5999;0.0424323-i*12.5999;0.0431058-i*12.7999;...
+    0.0431058+i*12.7999;0.0454604+i*17.9999;0.0454604-i*17.9999;0.207419+i*329.031;...
+    0.207419-i*329.031;0.75946-i*329.583;0.75946+i*329.583;0.208118+i*330.138;0.208118-i*330.138;...
+    707.107-i*707.107;707.107+i*707.107;1350.43-i*1350.43;1350.43+i*1350.43;0;1],22.4437);
 
-pp.boostL = filtZPG([1.5], [0], 1, 10);
-pp.boost = filtZPG([3], [0], 1, 10);
+pp.ctrlCM = filtZPK([1,1,1],[0,0,0,0,0],1); %simple for now
+%%% filtZPG
+pp.ctrlFilt = [pp.ctrlDARM, pp.ctrlMICH, pp.ctrlPRC, pp.ctrlCM];
 
-% Original
-% pp.filtC1 = filtZPG([filtRes(1.5, 1)],[0;filtRes(0, 0.7); filtRes(50, 2)], pp.gains(1), pp.freqs(1));  
-% pp.filtC2 = filtZPG([filtRes(1.5, 1)],[0;filtRes(0, 0.7);filtRes(50, 2)], pp.gains(2), pp.freqs(2));  
-% pp.filtD1 = filtZPG([filtRes(3.0, 1)],[0;filtRes(0, 0.7);filtRes(90, 1)], pp.gains(3), pp.freqs(3));  
-% pp.filtD2 = filtZPG([filtRes(0.8, 1)],[0;filtRes(0, 0.7);filtRes(40, 2)], pp.gains(4), pp.freqs(4)); 
-% pp.filtPR = filtZPG([filtRes(1.5, 1)],[0;filtRes(0, 0.7);filtRes(70, 2)],pp.gains(5), pp.freqs(5)); 
+% Specify the pendulum TF (mechanical response) and treat PM as a frequency
+% actuator
 
-pp.filtC1 = filtZPG([filtRes(0.8, 2)],[0;filtRes(0, 0.7); filtRes(50, 2)], pp.gains(1), pp.freqs(1));  
-pp.filtC2 = filtZPG([filtRes(0.5, 2)],[0;filtRes(0, 0.7);filtRes(40, 2)], pp.gains(2), pp.freqs(2));  
-pp.filtD1 = filtZPG([filtRes(1, 1)],[0;filtRes(0, 0.7);filtRes(60, 1)], pp.gains(3), pp.freqs(3));  
-pp.filtD2 = filtZPG([filtRes(0.8, 2)],[0;filtRes(0, 0.7);filtRes(40, 2)], pp.gains(4), pp.freqs(4)); 
-pp.filtPR = filtZPG([filtRes(0.5, 1)],[0;filtRes(0, 0.7);filtRes(60, 2)],pp.gains(5), pp.freqs(5)); 
+pp.unityFilt = filtZPK([],[],1);
 
-zfq = [ 36, 10; 72, 3];
-pfq = [ 28, 3; 24, 0.7];
+pp.pend = filtZPG([], filtRes(0.7, 50.0025), 1, 0);
 
-zfq_H = [ 35, 30; 50, 10; 80, 10];
-pfq_H = [ 32, 3; 30, 3; 27, 0.8];
-
-zfq_I = [ 31.5, 30; 45, 10; 72, 10];
-pfq_I = [ 28.8, 3; 27, 3; 24.3, 0.8];
-
-zfq_L = [ 29.75, 30; 42.5, 10; 68, 10];
-pfq_L = [ 27.2, 3; 25.5, 3; 22.95, 0.8];
-
-
-zfq_PR = [ 45, 10; 80, 10];
-pfq_PR = [ 35, 5; 30, 1];
-
-% zfq_AS = [ 54, 10; 96, 10];
-% pfq_AS = [ 42, 3; 36, 1];
-
-% zfq_AS = [ 50, 30; 72, 10; 115.2, 10];
-% pfq_AS = [ 46, 3; 43.2, 3; 38.8, 0.8];
-
-% zfq_AS = [ 58, 30; 80, 10; 125, 10];
-% pfq_AS = [ 54, 3; 50, 3; 40, 0.8];
-
- zfq_AS = [ 60, 10; 116, 3];
- pfq_AS = [ 42, 3; 36, 1];
+pp.integrator = filtZPK([0],[],1);
  
-test_Hcut = filtZPG([filtRes(zfq_H(:, 1), zfq_H(:, 2))], [ filtRes(pfq_H(:,1), pfq_H(:,2))], 1, 10);
-test_Lcut = filtZPG([filtRes(zfq_I(:, 1), zfq_I(:, 2))], [ filtRes(pfq_I(:,1), pfq_I(:,2))], 1, 10);
-test_PRcut = filtZPG([filtRes(zfq_PR(:, 1), zfq_PR(:, 2))], [ filtRes(pfq_PR(:,1), pfq_PR(:,2))], 1, 10);
-test_AScut = filtZPG([filtRes(zfq_AS(:, 1), zfq_AS(:, 2))], [ filtRes(pfq_AS(:,1), pfq_AS(:,2))], 1, 10);
+pp.pendFilt = [pp.pend, pp.pend, pp.pend, pp.pend, pp.pend, pp.pend, pp.unityFilt, pp.integrator];
 
-test_LLcut = filtZPG([filtRes(zfq_L(:, 1), zfq_L(:, 2))], [ filtRes(pfq_L(:,1), pfq_L(:,2))], 1, 10);
+% mirrFilt defines compensation filters (approximating the inverse of the
+% mechanical response). This type of control design was not used in iLIGO.
 
-test_cut = filtZPG([filtRes(zfq(:, 1), zfq(:, 2))], [ filtRes(pfq(:,1), pfq(:,2))], 1, 10);
-pp.filtResTEST = filtZPG([filtRes(0.5, 0.8),filtRes(1, 0.8) ],[filtRes(0.7, 20), filtRes(1.2, 20)], 1, 10);
-pp.filtResTEST1 = filtZPG([filtRes(0.5, 0.8),filtRes(1, 0.8) ],[filtRes(0.7, 25), filtRes(1.2, 25)], 1, 10);
+pp.mirrFilt = [pp.unityFilt,pp.unityFilt,pp.unityFilt,pp.unityFilt,pp.unityFilt,pp.unityFilt,pp.unityFilt,pp.unityFilt];
 
-pp.ctrlC1 = filtProd(pp.filtC1, pp.filtResTEST, test_Hcut);
-pp.ctrlC2 = filtProd(pp.filtC2, pp.filtResTEST,test_Hcut); 
-pp.ctrlD1 = filtProd(pp.filtD1, pp.filtResTEST,  test_AScut);
-pp.ctrlD2 = filtProd(pp.filtD2, pp.filtResTEST, test_Lcut); 
-pp.ctrlPR = filtProd(pp.filtPR, pp.filtResTEST,test_PRcut); 
-
-
-
-pp.ctrlFilt = [pp.ctrlC1, pp.ctrlC2, pp.ctrlD1, pp.ctrlD2, pp.ctrlPR];
-
-% Specify the pendulum TF (from PM actuator to mirror pitch motion, to be tuned)
-
-pp.pend = filtZPG([], filtRes(0.6, 50.0025), 1, 0);
- 
-pp.pendFilt = [pp.pend, pp.pend, pp.pend, pp.pend, pp.pend];
-
-% Specify the mirror specific filter
-
-%test_cut = filtZPG([filtRes(35, 50); filtRes(50, 10);filtRes(68, 10)], [ filtRes(34,10); filtRes(30, 3);filtRes(25, 1)], 1,10);
-
-
-pp.mirrFiltPR_temp = filtZPG([filtRes(0.6, 1)],[] , 1, 0);
-pp.mirrFiltTM_temp = filtZPG(filtRes(0.6, 1), [] , 1, 0);
-pp.mirrFiltPR = filtProd(pp.mirrFiltPR_temp);
-pp.mirrFiltTM = filtProd(pp.mirrFiltTM_temp);
-
-pp.mirrFilt = [pp.mirrFiltTM, pp.mirrFiltTM, pp.mirrFiltTM, pp.mirrFiltTM, pp.mirrFiltPR];
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% specify the signals for spot monitoring
-pp.vSpotSig = zeros(1, pp.Nmirr);
-pp.vSpotField = zeros(1, pp.Nmirr);
-for n=1:pp.Nmirr
-  pp.vSpotSig(n) = getProbeNum(opt, [pp.mirrNames{n} '_DC']);
-  pp.vSpotField(n) = getFieldIn(opt, pp.mirrNames{n}, 'fr');
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Put opt and all the parameters in pickle
-pickle.param = pp;
-pickle.opt = opt; 
+% Put opt and all the parameters in lentickle
+lentickle.param = pp;
+lentickle.opt = opt; 
