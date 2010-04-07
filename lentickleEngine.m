@@ -58,7 +58,10 @@ function rslt = lentickleEngine(lentickle, pos, f, sigAC, mMech)
   eyeSens = eye(Nsens);
   eyeDof = eye(Ndof);
   eyeMirr = eye(Nmirr);
-  
+
+  % prevent scale warnings
+  sWarn = warning('off', 'MATLAB:nearlySingularMatrix');
+
   for n = 1:Nfreq
     % use maps to produce mirrSens
     mirrSens = probeSens * sigAC(:, :, n) * mirrDrive;
@@ -100,6 +103,9 @@ function rslt = lentickleEngine(lentickle, pos, f, sigAC, mMech)
 %    rslt.mirrSpot(:, :, n) = probeSpot * sigAC(:, :, n) * mirrDrive;
   end
 
+  % reset scale warning state
+  warning(sWarn.state, sWarn.identifier);
+  
   % copy some parameter matrices
   rslt.mirrDof = pp.mirrDof;
   
