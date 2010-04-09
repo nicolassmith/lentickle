@@ -21,10 +21,6 @@ nREF2I =  getProbeNum(opt, 'REFL_A I2');
 nREF2Q =  getProbeNum(opt, 'REFL_A Q2');
 nOMCPD =  getProbeNum(opt, 'OMCt_A DC');
 
-% reduced sensor set simple names
-pp.sensNames = {'AS_I','AS_Q','POX_I','POX_Q','REFL1_I','REFL1_Q',...
-                'REFL2_Q','REFL2_I','OMC_PD'};
-
 
 % get the serial numbers of optics
 pp.mirrNames = {'EX', 'EY', 'IX', 'IY', 'BS','PR','AM','PM'};
@@ -58,13 +54,17 @@ pp.dofMirr =       [  1    0    0   0  ; %EX
                       0    0    0   0  ; %AM
                       0    0    0   1 ]; %PM
                           
-pp.mirrDrive = pp.driveMirr';
+pp.mirrDrive = pp.driveMirr.';
 pp.dofDrive  = pp.mirrDrive * pp.dofMirr;
 pp.mirrDof   = pinv(pp.dofMirr); %changed inv to pinv
 pp.driveDof  = pp.mirrDof * pp.driveMirr ;
 
 % Control Loop input ports and input matrix
 pp.vSens = [nASI,nASQ,nPOXI,nPOXQ,nREF1I,nREF1Q,nREF2I,nREF2Q,nOMCPD];
+
+% reduced sensor set simple names for easy referencing
+pp.sensNames = {'AS_I','AS_Q','POX_I','POX_Q','REFL1_I','REFL1_Q',...
+                'REFL2_Q','REFL2_I','OMC_PD'};
 
 pp.probeName = getProbeName(opt, pp.vSens);
 for n = 1 : pp.Ndof
@@ -90,13 +90,13 @@ pp.dofSens = [  0    0    0   0  ; %ASI
                 0    0    0   0  ; %REFL2Q
                 1    0    0   0  ];%OMCPD_SUM
 
-               % DARM       MICH   PRC       CM 
+               % DARM  MICH   PRC       CM 
 pp.gainDof = [ -.483    137   1.82e8   -1e7]; 
 
 pp.sensDof_temp = pinv(pp.dofSens); %pinv
 
 for n = 1 : pp.Ndof
-  pp.sensDof(n,:) = pp.gainDof(n) .* pp.sensDof_temp(n,:); %%%bug here (n) argument on gainSens
+  pp.sensDof(n,:) = pp.gainDof(n) .* pp.sensDof_temp(n,:); 
 end
                  
 
@@ -126,7 +126,7 @@ pp.ctrlMICH = ... %from foton
     10-i*17.3205;0+i*329.395;0-i*329.395;0+i*329.584;0-i*329.584;0+i*329.773;0-i*329.773;1;3],...
     [0.163827+i*1.16857;0.163827-i*1.16857;0.190788+i*2.09132;0.190788-i*2.09132;4.82796+i*10.8438;...
     4.82796-i*10.8438;88.6014+i*179.304;88.6014-i*179.304;0.207419+i*329.031;0.207419-i*329.031;...
-    0.75946+i*329.583;0.75946-i*329.583;0.208118+i*330.138;0.208118-i*330.138;0],2.83899);
+    0.75946+i*329.583;0.75946-i*329.583;0.208118+i*330.138;0.208118-i*330.138;0],2.83899); %#ok
 
 pp.ctrlPRC = ... %from foton
     filtZPK([0.255452-i*1.20318;0.255452+i*1.20318;1.34397-i*6.10379;1.34397+i*6.10379;2.41535-i*6.57009;...
@@ -140,7 +140,7 @@ pp.ctrlPRC = ... %from foton
     0.0417588-i*12.3999;0.0424323+i*12.5999;0.0424323-i*12.5999;0.0431058-i*12.7999;...
     0.0431058+i*12.7999;0.0454604+i*17.9999;0.0454604-i*17.9999;0.207419+i*329.031;...
     0.207419-i*329.031;0.75946-i*329.583;0.75946+i*329.583;0.208118+i*330.138;0.208118-i*330.138;...
-    707.107-i*707.107;707.107+i*707.107;1350.43-i*1350.43;1350.43+i*1350.43;0;1],22.4437);
+    707.107-i*707.107;707.107+i*707.107;1350.43-i*1350.43;1350.43+i*1350.43;0;1],22.4437); %#ok
 
 pp.ctrlCM = filtProd(filtZPK([1,1,1],[0,0,0,0,0],1),filtZPG([1e3,1e3],[0,0],1,2e5)); %simple for now
 %%% filtZPG
@@ -153,14 +153,15 @@ pp.unityFilt = filtZPK([],[],1);
 
 pp.pend = filtZPG([], filtRes(0.7, 50.0025), 1, 0);
 
-pp.integrator = filtZPK([0],[],1);
+pp.integrator = filtZPK([0],[],1);%#ok
  
 pp.pendFilt = [pp.pend, pp.pend, pp.pend, pp.pend, pp.pend, pp.pend, pp.unityFilt, pp.integrator];
 
 % mirrFilt defines compensation filters (approximating the inverse of the
 % mechanical response). This type of control design was not used in iLIGO.
 
-pp.mirrFilt = [pp.unityFilt,pp.unityFilt,pp.unityFilt,pp.unityFilt,pp.unityFilt,pp.unityFilt,pp.unityFilt,pp.unityFilt];
+pp.mirrFilt = [pp.unityFilt,pp.unityFilt,pp.unityFilt,pp.unityFilt,...
+    pp.unityFilt,pp.unityFilt,pp.unityFilt,pp.unityFilt];
 
 % Put opt and all the parameters in lentickle
 lentickle.param = pp;
