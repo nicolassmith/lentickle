@@ -17,6 +17,7 @@ par = paramEligo_01_L1(par); %uses param_null for the estimate function
 opt = optEligo(par);
 opt = probeSens(opt, par);
 
+% get loop calculations
 lentickle = lentickleEligo(opt);
 
 f = logspace(log10(f_lowerLimit),log10(f_upperLimit),f_numpoints);
@@ -49,22 +50,26 @@ carmol = squeeze(results.errOL(4,4,:));
 
 % find relative calibration of AS_Q and OMC_PD
 
-darm2omc = pickleTF(results,'darm_ctrl','OMC_PD');
-darm2asq = pickleTF(results,'darm_ctrl','AS_Q');
+darm2omc = pickleTF(results,'darm_ctrl','OMC_PD');%,'cl');
+darm2asq = pickleTF(results,'darm_ctrl','AS_Q');%,'cl');
 
-omcperasq = darm2omc./darm2asq;
+figure(4)
+SRSbode([f,darm2omc],[f,darm2asq])
+legend('darm\_ctrl to omc','darm\_ctrl to asq')
+
+omcperasq = mean(darm2omc./darm2asq);
 
 % get AM coupling
-am2dc = pickleTF(results,'AM','OMC_PD')./omcperasq;
-am2rf = pickleTF(results,'AM','AS_Q');
+am2dc = pickleTF(results,'AM','OMC_PD','cl')./omcperasq;
+am2rf = pickleTF(results,'AM','AS_Q','cl');
 
 figure(2)
 SRSbode([f,am2dc],[f,am2rf])
 legend('DC AM coupling','RF AM coupling')
 
 % get PM coupling
-am2dc = pickleTF(results,'PM','OMC_PD')./omcperasq;
-am2rf = pickleTF(results,'PM','AS_Q');
+am2dc = pickleTF(results,'PM','OMC_PD','cl')./omcperasq;
+am2rf = pickleTF(results,'PM','AS_Q','cl');
 
 figure(3)
 SRSbode([f,am2dc],[f,am2rf])

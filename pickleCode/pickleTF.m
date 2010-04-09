@@ -4,7 +4,7 @@
 % nameIn and nameOut can be any of the following strings:
 % sens, err, ctrl, corr, mirr
 
-function mTF = pickleTF(rslt, nameFrom, nameTo)
+function mTF = pickleTF(rslt, nameFrom, nameTo, varargin)
 
   names = rslt.testPoints;
   namesUpper = rslt.testPointsUpper;
@@ -25,8 +25,7 @@ function mTF = pickleTF(rslt, nameFrom, nameTo)
   
   ctrlFrom = 0;
   ctrlTo = 0;
-  
-  
+    
   % if you are looking for a ctrl channel, strip off _ctrl and make a note
   if numel(nameFrom)>4 && strcmpi(nameFrom(end-4:end),'_ctrl')
       ctrlFrom = 1;
@@ -39,7 +38,7 @@ function mTF = pickleTF(rslt, nameFrom, nameTo)
   end
   
   % find the singular test point names in the name list
-  singNames = {mirrNames{:},sensNames{:},dofNames{:}};
+  singNames = [mirrNames,sensNames,dofNames];
   
   singFrom = find(strcmpi(nameFrom,singNames),1);
   singTo = find(strcmpi(nameTo,singNames),1);
@@ -75,12 +74,15 @@ function mTF = pickleTF(rslt, nameFrom, nameTo)
      else
          error('Both channels must be valid single channel testpoints (or neither)')
      end
-   else
+  else
       if ~isempty(singTo)
           error('Both channels must be valid single channel testpoints (or neither)')
       end
-   end
+  end
   
+  % now we have determined which test point class the single channels
+  % belong to, we can get the full 3d matrix, and pick out the right
+  % channels at the end.
   
   % check names input and output names
   nIn = find(strcmp(nameFrom, names));
@@ -130,6 +132,11 @@ function mTF = pickleTF(rslt, nameFrom, nameTo)
     end
   end
     
+  if numel(varargin) && strcmpi(varargin{1},'cl')
+      clTF = rslt.([nameFrom 'CL']);
+
+      mTF = getProdTF(mTF, clTF);
+  end
   
   % now we squeeze if we were asking for single channels
   if ~isempty(singTo) && ~isempty(singFrom)
