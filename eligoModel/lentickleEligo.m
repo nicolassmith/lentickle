@@ -10,7 +10,7 @@ function lentickle = lentickleEligo(opt)
 % pendFilt - pendulum TF for each mirror (from penultimum mass actuator to mirror motion);
 % mirrDrive - map from mirrors to Optickle drive indeces
 
-% probe serial numbers of relevant sensors
+% optickle probe serial numbers of relevant sensors
 nASI =  getProbeNum(opt, 'AS_A I1');
 nASQ =  getProbeNum(opt, 'AS_A Q1');
 nPOXI =  getProbeNum(opt, 'POX_A I1');
@@ -21,6 +21,9 @@ nREF2I =  getProbeNum(opt, 'REFL_A I2');
 nREF2Q =  getProbeNum(opt, 'REFL_A Q2');
 nOMCPD =  getProbeNum(opt, 'OMCt_A DC');
 
+% reduced sensor set simple names
+pp.sensNames = {'AS_I','AS_Q','POX_I','POX_Q','REFL1_I','REFL1_Q',...
+                'REFL2_Q','REFL2_I','OMC_PD'};
 
 
 % get the serial numbers of optics
@@ -44,14 +47,14 @@ for n = 1:pp.Ndof
 end
 
 % drive matrix (LSC output matrix)
-d = 1.64;
+d = sqrt(2)/2;
 %                    DARM MICH PRC CM
 pp.dofMirr =       [  1    0    0   0  ; %EX
                      -1    0    0   0  ; %EY
                       0    0    0   0  ; %IX
                       0    0    0   0  ; %IY
                       0    1    0   0  ; %BS
-                      0   -d   -1   0  ; %PR
+                      0   -d    1   0  ; %PR
                       0    0    0   0  ; %AM
                       0    0    0   1 ]; %PM
                           
@@ -87,13 +90,13 @@ pp.dofSens = [  0    0    0   0  ; %ASI
                 0    0    0   0  ; %REFL2Q
                 1    0    0   0  ];%OMCPD_SUM
 
-               % nASI,nASQ,nPOXI,nPOXQ,nREF1I,nREF1Q,nREF2I,nREF2Q,nOMCPD   
-pp.gainSens = [     1    1 1.09e8 123.6 -1e7      1      1      1   -1/3.454]; 
+               % DARM       MICH   PRC       CM 
+pp.gainDof = [ -.483    137   1.82e8   -1e7]; 
 
 pp.sensDof_temp = pinv(pp.dofSens); %pinv
 
 for n = 1 : pp.Ndof
-  pp.sensDof(n,:) = pp.gainSens .* pp.sensDof_temp(n,:); %%%bug here (n) argument on gainSens
+  pp.sensDof(n,:) = pp.gainDof(n) .* pp.sensDof_temp(n,:); %%%bug here (n) argument on gainSens
 end
                  
 
@@ -139,7 +142,7 @@ pp.ctrlPRC = ... %from foton
     0.207419-i*329.031;0.75946-i*329.583;0.75946+i*329.583;0.208118+i*330.138;0.208118-i*330.138;...
     707.107-i*707.107;707.107+i*707.107;1350.43-i*1350.43;1350.43+i*1350.43;0;1],22.4437);
 
-pp.ctrlCM = filtZPK([1,1,1],[0,0,0,0,0],1); %simple for now
+pp.ctrlCM = filtProd(filtZPK([1,1,1],[0,0,0,0,0],1),filtZPG([1e3,1e3],[0,0],1,2e5)); %simple for now
 %%% filtZPG
 pp.ctrlFilt = [pp.ctrlDARM, pp.ctrlMICH, pp.ctrlPRC, pp.ctrlCM];
 

@@ -18,14 +18,78 @@ function mTF = pickleTF(rslt, nameFrom, nameTo)
     nameTo = nameRoFrom{nRO};
   end
   
+  % hijack here to look for single dimensional TFs
+  mirrNames = rslt.mirrNames;
+  sensNames = rslt.sensNames;
+  dofNames = rslt.dofNames;
+  
+  ctrlFrom = 0;
+  ctrlTo = 0;
+  
+  
+  % if you are looking for a ctrl channel, strip off _ctrl and make a note
+  if numel(nameFrom)>4 && strcmpi(nameFrom(end-4:end),'_ctrl')
+      ctrlFrom = 1;
+      nameFrom = nameFrom(1:end-5);
+  end
+  
+  if numel(nameTo)>4 && strcmpi(nameTo(end-4:end),'_ctrl')
+      ctrlTo = 1;
+      nameTo = nameTo(1:end-5);
+  end
+  
+  % find the singular test point names in the name list
+  singNames = {mirrNames{:},sensNames{:},dofNames{:}};
+  
+  singFrom = find(strcmpi(nameFrom,singNames),1);
+  singTo = find(strcmpi(nameTo,singNames),1);
+  
+  if ~isempty(singFrom)
+     nameFrom = 'mirr'; % what we are looking for is a mirror
+     Nmirr = numel(mirrNames);
+     Nsens = numel(sensNames);
+     if singFrom > Nmirr
+         nameFrom = 'sens'; % no wait, it's a sensor
+         singFrom = singFrom - Nmirr;
+          if singFrom > Nsens
+             nameFrom = 'dof'; % actually it's a dof
+             singFrom = singFrom - Nsens;
+             if ctrlFrom
+                 nameFrom = 'ctrl'; % really, really it's a ctrl
+             end
+         end
+     end
+     if ~isempty(singTo)
+        nameTo = 'mirr';
+        if singTo > Nmirr
+          nameTo = 'sens'; % no wait, it's a sensor
+          singTo = singTo - Nmirr;
+            if singTo > Nsens
+              nameTo = 'dof'; % actually it's a dof
+              singTo = singTo - Nsens;
+              if ctrlTo
+                 nameTo = 'ctrl'; % really, really it's a ctrl
+              end
+            end
+        end
+     else
+         error('Both channels must be valid single channel testpoints (or neither)')
+     end
+   else
+      if ~isempty(singTo)
+          error('Both channels must be valid single channel testpoints (or neither)')
+      end
+   end
+  
+  
   % check names input and output names
   nIn = find(strcmp(nameFrom, names));
   nOut = find(strcmp(nameTo, names));
   if isempty(nIn)
-    error('Invalid input name "%s".', nameIn)
+    error('Invalid input name "%s".', nameFrom) %bug
   end
   if isempty(nOut)
-    error('Invalid output name "%s".', nameOut)
+    error('Invalid output name "%s".', nameTo) %bug
   end
 
   % get initial matrix
@@ -66,5 +130,10 @@ function mTF = pickleTF(rslt, nameFrom, nameTo)
     end
   end
     
+  
+  % now we squeeze if we were asking for single channels
+  if ~isempty(singTo) && ~isempty(singFrom)
+      mTF = squeeze(mTF(singTo,singFrom,:));
+  end
 end
 

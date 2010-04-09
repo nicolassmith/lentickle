@@ -5,7 +5,8 @@ mfilename = 'paramEligo_01_L1';
 
 % Demodulation Phases -- TO BE TUNED!
 
-par.phi.REFL_A1 = 0;
+%par.phi.REFL_A1 = 0;
+par.phi.REFL_A1 = -13.26-145.582;
 par.phi.REFL_A2 = 0; 
 par.phi.REFL_A31 = 0;
 par.phi.REFL_A32 = 0;
@@ -90,7 +91,7 @@ par.phi.AS_B1 = (2.8588 - pi/2)* 180/pi; % AS_B 1 Q for D1
 par.phi.REFL_B2 =  2.6075 * 180/pi; % C1 - unsatable
 par.phi.REFL_A2 =  2.4504 * 180/pi; % PRM
 par.phi.REFL_A31 = 0.031416 * 180/pi; %not tuned
-par.phi.POX_A1 =  0.91106  * 180/pi; % PR not included in analGouy
+%par.phi.POX_A1 =  0.91106  * 180/pi; % PR not included in analGouy
 %par.phi.POX_B1 = (1.7593 - pi/2) * 180/pi; POX B1 for D2
 par.phi.POX_B1 = ( 1.0996 - pi/2) * 180/pi;
 
@@ -98,7 +99,8 @@ par.phi.POX_B1 = ( 1.0996 - pi/2) * 180/pi;
 %I/Q optimized phases
 
 par.phi.REFL_B2 =  (2.4819) * 180/pi; % C1 - unsatable
-par.phi.POX_A1 =   (1.4508 + pi/2) * 180/pi;  % ok
+%par.phi.POX_A1 =   (1.4508 + pi/2) * 180/pi;  % ok
+par.phi.POX_A1 =   (1.4508 + pi/2) * 180/pi - 85.4-7.69-90;  % nico says so
 par.phi.POX_B1 =   (1.4508 + pi/2 ) * 180/pi; % ok
 par.phi.AS_A1 =  ( 1.0753)  * 180/pi;         %ok
 par.phi.REFL_A2 =   (2.5133) * 180/pi; % PRM   2.5133

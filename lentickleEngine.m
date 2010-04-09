@@ -113,6 +113,12 @@ function rslt = lentickleEngine(lentickle, pos, f, sigAC, mMech)
   rslt.testPoints = {'sens', 'err', 'ctrl', 'corr', 'mirr'};
   rslt.Ntp = numel(rslt.testPoints);
   
+  % copy names
+  rslt.mirrNames = pp.mirrNames;
+  rslt.sensNames = pp.sensNames;
+  rslt.dofNames = pp.dofNames;
+  
+  
   % make capitalized version of names
   rslt.testPointsUpper = rslt.testPoints;
   for n = 1:rslt.Ntp
