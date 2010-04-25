@@ -11,7 +11,7 @@
 function vNoiseOut = pickleNoise(rslt, nameFrom, nameTo, vNoiseIn)
 
   % grab closed loop TF
-    mTF = pickleTF(rslt, nameFrom, nameTo,'cl');
+  mTF = pickleTF(rslt, nameFrom, nameTo,'cl');
       
   % compute noise
   vNoiseOut = getNoiseTransfer(mTF, vNoiseIn);

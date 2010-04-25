@@ -91,7 +91,7 @@ pp.dofSens = [  0    0    0   0  ; %ASI
                 1    0    0   0  ];%OMCPD_SUM
 
                % DARM  MICH   PRC       CM 
-pp.gainDof = [ -.483    137   1.82e8   -1e7]; 
+pp.gainDof = [ -.483   -137   2.82e8   -1e7]; 
 
 pp.sensDof_temp = pinv(pp.dofSens); %pinv
 
@@ -142,8 +142,8 @@ pp.ctrlPRC = ... %from foton
     0.207419-i*329.031;0.75946-i*329.583;0.75946+i*329.583;0.208118+i*330.138;0.208118-i*330.138;...
     707.107-i*707.107;707.107+i*707.107;1350.43-i*1350.43;1350.43+i*1350.43;0;1],22.4437); %#ok
 
-pp.ctrlCM = filtProd(filtZPK([1,1,1],[0,0,0,0,0],1),filtZPG([1e3,1e3],[0,0],1,2e5)); %simple for now
-%%% filtZPG
+pp.ctrlCM = filtProd(filtZPK([1,1,1],[0,0,0,0,0],1),filtZPG([1e3,1e3],[0,0],1,2e5)); %just something stable and big
+
 pp.ctrlFilt = [pp.ctrlDARM, pp.ctrlMICH, pp.ctrlPRC, pp.ctrlCM];
 
 % Specify the pendulum TF (mechanical response) and treat PM as a frequency
@@ -151,7 +151,7 @@ pp.ctrlFilt = [pp.ctrlDARM, pp.ctrlMICH, pp.ctrlPRC, pp.ctrlCM];
 
 pp.unityFilt = filtZPK([],[],1);
 
-pp.pend = filtZPG([], filtRes(0.7, 50.0025), 1, 0);
+pp.pend = filtZPG([], filtRes(0.75, 50.0025), 1, 0);
 
 pp.integrator = filtZPK([0],[],1);%#ok
  

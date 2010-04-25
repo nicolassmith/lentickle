@@ -1,7 +1,7 @@
 % creates eLIGO lentickle model
 
 % frequency domain
-f_numpoints = 1000;
+f_numpoints = 500;
 f_upperLimit = 50000;
 f_lowerLimit = .1;
 
@@ -23,7 +23,16 @@ lentickle = lentickleEligo(opt);
 f = logspace(log10(f_lowerLimit),log10(f_upperLimit),f_numpoints);
 f = f.';
 
-results = lentickleEngine(lentickle,[],f);
+use_saved = 0;
+
+if use_saved
+    load('ticklesaved.mat') 
+else
+    [fDC,sigDC,sigAC, mMech] = tickle(lentickle.opt, [], f); 
+    save('ticklesaved.mat','fDC','sigDC','sigAC','mMech')
+end
+
+results = lentickleEngine(lentickle,[],f,sigAC,mMech);
 
 darmol = squeeze(results.errOL(1,1,:));
 michol = squeeze(results.errOL(2,2,:));
@@ -74,3 +83,7 @@ am2rf = pickleTF(results,'PM','AS_Q','cl');
 figure(3)
 SRSbode([f,am2dc],[f,am2rf])
 legend('DC PM coupling','RF PM coupling')
+
+figure(1)
+SRSbode([f,carmol],[f,darmol],[f,prcol],[f,michol])
+legend('cm olg','darm olg','prc olg','mich olg')
