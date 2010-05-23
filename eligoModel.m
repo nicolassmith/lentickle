@@ -23,7 +23,7 @@ lentickle = lentickleEligo(opt);
 f = logspace(log10(f_lowerLimit),log10(f_upperLimit),f_numpoints);
 f = f.';
 
-use_saved = 0;
+use_saved = 1;
 
 if use_saved
     load('ticklesaved.mat') 

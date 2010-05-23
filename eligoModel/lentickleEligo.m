@@ -93,6 +93,8 @@ pp.dofSens = [  0    0    0   0  ; %ASI
                % DARM  MICH   PRC       CM 
 pp.gainDof = [ -.483   -137   2.82e8   -1e7]; 
 
+pp.setUgfDof = [ 185    35    35        25e3];
+
 pp.sensDof_temp = pinv(pp.dofSens); %pinv
 
 for n = 1 : pp.Ndof

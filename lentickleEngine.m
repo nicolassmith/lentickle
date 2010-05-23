@@ -55,6 +55,30 @@ function rslt = lentickleEngine(lentickle, pos, f, sigAC, mMech)
   mirrDrive = pp.mirrDrive;
   driveMirr = pp.driveMirr;
   
+  
+  
+  % if desired, set UGF directly to desired value for each DOF
+  if(any(strcmp(fieldnames(pp),'setUgfDof')))
+    setUgfDof = pp.setUgfDof;
+    ugfDof = setUgfDof;
+
+    for m = 1:Ndof
+      % find the nearest f index and use that
+      [fDelta,fIndex] = min(abs(f-setUgfDof(m)));
+      ugfDof(m) = f(fIndex);
+      
+      dofGain = sensDof * probeSens * sigAC(:, :, fIndex) * mirrDrive *...
+            diag(hPend(fIndex, :)) * diag(hMirr(fIndex, :)) * dofMirr *...
+            diag(hCtrl(fIndex, :));
+      
+      dofGain = dofGain(m,m);
+      
+      dofSign = sign(angle(dofGain));
+      
+      sensDof(m,:) = pp.sensDof(m,:) / abs(dofGain) * dofSign;
+    end
+  end
+  
   eyeSens = eye(Nsens);
   eyeDof = eye(Ndof);
   eyeMirr = eye(Nmirr);
