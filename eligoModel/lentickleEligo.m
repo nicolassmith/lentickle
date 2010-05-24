@@ -1,4 +1,4 @@
-function lentickle = lentickleEligo(opt)
+function lentickle = lentickleEligo(opt,darmsensor)
 % Defines matricies and filters for lentickle model 
 % The matrices defined here are:
 
@@ -78,22 +78,38 @@ for n=1:pp.Nsens
   pp.probeSens(n, pp.vSens(n)) = 1;
 end
 
+% handle darm sensor argument
+
+if nargin<2
+    darmsensor = 'omc';
+end
+
+if strcmpi(darmsensor,'omc')
+    omg = 1;
+    asg = 0;
+elseif strcmpi(darmsensor,'asq')
+    omg = 0;
+    asg = 1;
+else
+    error(['I don''t understand darmsensor:' darmsensor])
+end
+
 % input matrix
 %              DARM MICH PRC CM
 pp.dofSens = [  0    0    0   0  ; %ASI
-                0    0    0   0  ; %ASQ
+                asg  0    0   0  ; %ASQ
                 0    0    1   0  ; %POXI
                 0    1    0   0  ; %POXQ
                 0    0    0   1  ; %REFL1I
                 0    0    0   0  ; %REFL1Q
                 0    0    0   0  ; %REFL2I
                 0    0    0   0  ; %REFL2Q
-                1    0    0   0  ];%OMCPD_SUM
+                omg  0    0   0  ];%OMCPD_SUM
 
                % DARM  MICH   PRC       CM 
-pp.gainDof = [ -.483   -137   2.82e8   -1e7]; 
+pp.gainDof = [1 1 1 1];%[ -.483   -137   2.82e8   -1e7]; 
 
-pp.setUgfDof = [ 185    35    35        25e3];
+pp.setUgfDof = [ 185    35    35        25e3]; %choose UGF for each DOF
 
 pp.sensDof_temp = pinv(pp.dofSens); %pinv
 
@@ -103,7 +119,7 @@ end
                  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Specify the control loop filters (to be tuned)
+% Specify the control loop filters 
 
 pp.ctrlDARM =...  %from foton
     filtZPK([3.13147-1i*5.118;3.13147+1i*5.118;0.397453-1i*11.9034;...

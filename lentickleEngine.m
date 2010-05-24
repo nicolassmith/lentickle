@@ -77,6 +77,9 @@ function rslt = lentickleEngine(lentickle, pos, f, sigAC, mMech)
       
       sensDof(m,:) = pp.sensDof(m,:) / abs(dofGain) * dofSign;
     end
+    
+    % store the true UGFs
+    rslt.ugfDof = ugfDof;
   end
   
   eyeSens = eye(Nsens);
