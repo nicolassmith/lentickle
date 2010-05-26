@@ -2,8 +2,8 @@
 
 % frequency domain
 f_numpoints = 1000;
-f_upperLimit = 50000;
-f_lowerLimit = 1;
+f_upperLimit = 7000;
+f_lowerLimit = 10;
 
 %darmsens = 'omc'; %use omc
 
@@ -14,7 +14,7 @@ addpath(genpath('mattlib'));
 addpath(genpath('pickleCode'));
 
 % set up eLIGO optickle model
-par = paramPowerL1(20, 12e-12);
+par = paramPowerL1(8, 15e-12);
 par = paramEligo_01_L1(par); %uses param_null for the estimate function
 opt = optEligo(par);
 opt = probeSens(opt, par);
@@ -24,6 +24,8 @@ lentickle = lentickleEligo(opt,darmsens);
 
 f = logspace(log10(f_lowerLimit),log10(f_upperLimit),f_numpoints);
 f = f.';
+
+f = [f;30000];
 
 use_saved = 1;
 
