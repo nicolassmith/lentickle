@@ -64,6 +64,9 @@ function rslt = lentickleEngine(lentickle, pos, f, sigAC, mMech)
 
     for m = 1:Ndof
       % find the nearest f index and use that
+      if isnan(setUgfDof(m))
+          continue
+      end
       [fDelta,fIndex] = min(abs(f-setUgfDof(m)));
       ugfDof(m) = f(fIndex);
       

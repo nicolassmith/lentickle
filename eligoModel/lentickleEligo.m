@@ -107,9 +107,9 @@ pp.dofSens = [  0    0    0   0  ; %ASI
                 omg  0    0   0  ];%OMCPD_SUM
 
                % DARM  MICH   PRC       CM 
-pp.gainDof = [1 1 1 1];%[ -.483   -137   2.82e8   -1e7]; 
+pp.gainDof = [ -.483   -137   2.82e8   4.4e7]; 
 
-pp.setUgfDof = [ 185    35    35        25e3]; %choose UGF for each DOF
+pp.setUgfDof = [ 185    35    35       NaN]; %choose UGF for each DOF
 
 pp.sensDof_temp = pinv(pp.dofSens); %pinv
 
