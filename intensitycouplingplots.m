@@ -2,15 +2,16 @@
 
 setupLentickle;
 
-f_numpoints = 1000;
-f_upperLimit = 7500;
+f_numpoints = 200;
+f_upperLimit = 5000;
 f_lowerLimit = 10;
 
 f = logspace(log10(f_lowerLimit),log10(f_upperLimit),f_numpoints).';
 
 inPower = 8;
 
-offsets = [ 1 -15 -7 7 15 ]*1e-12;
+offsets = [1 15];%[ 1 -20 -10 -7 7 10 20 ];
+offsets = offsets*1e-12;
 
 Nplot = length(offsets);
 
@@ -33,14 +34,30 @@ for kk = 1:Nplot
     result(kk) = getEligoResults(f,inPower,offsets(kk),sensors{kk});
     switch sensors{kk}
         case 'asq'
-            calASQ_DARMm = 1./((pickleTF(result(kk),'EX','AS_Q','cl')-pickleTF(result(kk),'EY','AS_Q','cl'))/2);
+            calASQ_DARMm = 1./((pickleTF(result(kk),'EX','AS_Q','cl')-pickleTF(result(kk),'EY','AS_Q','cl')));
             TF{kk} = [f,calTF(pickleTF(result(kk),'AM','AS_Q','cl'),calASQ_DARMm)];
         case 'omc'
-            calOMC_DARMm = 1./((pickleTF(result(kk),'EX','OMC_PD','cl')-pickleTF(result(kk),'EY','OMC_PD','cl'))/2);
+            calOMC_DARMm = 1./((pickleTF(result(kk),'EX','OMC_PD','cl')-pickleTF(result(kk),'EY','OMC_PD','cl')));
             TF{kk} = [f,calTF(pickleTF(result(kk),'AM','OMC_PD','cl'),calOMC_DARMm)];
     end
 end
 
 figure(22)
 SRSbode(TF{:})
-legend('RF 1pm','DC -15pm','DC -7pm','DC 7pm','DC 15pm');%,'DC 10pm','DC 20pm')
+
+% build legend
+
+clear TFleg
+TFleg{Nplot} = [];
+for kk = 1:Nplot
+    switch sensors{kk}
+        case 'asq'
+            TFleg{kk} = 'RF';
+        case 'omc'
+            TFleg{kk} = 'DC';
+    end
+    
+    TFleg{kk} = [TFleg{kk} ' ' num2str(offsets(kk)*1e12) 'pm'];
+end
+
+legend(TFleg{:})

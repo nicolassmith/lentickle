@@ -36,7 +36,7 @@ opt = addRFmodulator(opt, 'Mod2', par.Mod.f2, i * par.Mod.g2);
 
 % link, No MZ
 opt = addLink(opt, 'PM', 'out', 'Mod1', 'in', 5);
-opt = addLink(opt, 'Mod1', 'out', 'Mod2', 'in', 5);
+opt = addLink(opt, 'Mod1', 'out', 'Mod2', 'in',5);% 0.05);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Add Core Optics
@@ -77,10 +77,10 @@ opt = setMechTF(opt, 'PR', zpk([], -par.w_pit * dampRes, 1 / par.iI), 2);
 opt = setMechTF(opt, 'BS', zpk([], -par.w_pit * dampRes, 1 / par.iI), 2);
 
 
-% link MZ output to PR
-opt = addLink(opt, 'Mod2', 'out', 'PR', 'bk', 0.2);
+% link Modulators output to PR (no input Mode Cleaner)
+opt = addLink(opt, 'Mod2', 'out', 'PR', 'bk', 0.2);%35);
 
-% link BS A-side inputs to PR and SR front outputs
+% link BS A-side inputs to PR front output
 opt = addLink(opt, 'PR', 'fr', 'BS', 'frA', par.Length.PR);
 
 
@@ -106,7 +106,8 @@ opt = addLink(opt, 'EY', 'fr', 'IY', 'fr', par.Length.EY);
 % Define AS port (before the OMC)
 
 % Add BS with R = 0.99 ==> 99% of the power goes to the OMC,
-% 1% of the power is detected at the AS port
+% 1% of the power is detected at the AS port (before the OMC)
+
 opt = addMirror(opt, 'ASsplit', 45, 0, 0.01, 0, 0, 0);
 opt = addLink(opt, 'BS', 'bkB', 'ASsplit', 'fr', 2.5);
 
@@ -122,18 +123,16 @@ opt = addLink(opt, 'BS', 'bkB', 'ASsplit', 'fr', 2.5);
 fL = 33.1;
 opt = addTelescope(opt, 'OMCtel1', fL);
 
-opt = addMirror(opt, 'OMCa', 0, 1, pi/500, 10e-6);
-opt = addMirror(opt, 'OMCb', 0, 1, pi/500, 10e-6);
+% using realistic values, from T080144
 
-% opt = addLink(opt, 'BS', 'bkB', 'OMCtel1', 'in', 5.0);
-% opt = addLink(opt, 'OMCtel1', 'out', 'OMCa', 'bk', (fL - 0.036));
-% opt = addLink(opt, 'OMCa', 'fr', 'OMCb', 'fr', 0.22);
-% opt = addLink(opt, 'OMCb', 'fr', 'OMCa', 'fr', 0.22);
+OMC_perimeter = 1.077;
+opt = addMirror(opt, 'OMCa', 0, 1/1.96, 8300e-6, 30e-6);
+opt = addMirror(opt, 'OMCb', 0, 1/1.96, 8300e-6, 30e-6);
+opt = addLink(opt, 'OMCa', 'fr', 'OMCb', 'fr', OMC_perimeter/2);
+opt = addLink(opt, 'OMCb', 'fr', 'OMCa', 'fr', OMC_perimeter/2);
 
 opt = addLink(opt, 'ASsplit', 'fr', 'OMCtel1', 'in', 2.5);
 opt = addLink(opt, 'OMCtel1', 'out', 'OMCa', 'bk', (fL - 0.036));
-opt = addLink(opt, 'OMCa', 'fr', 'OMCb', 'fr', 0.22);
-opt = addLink(opt, 'OMCb', 'fr', 'OMCa', 'fr', 0.22);
 
 
 % tell Optickle to use this cavity basis

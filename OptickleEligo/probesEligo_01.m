@@ -1,5 +1,5 @@
 
-function opt = probeSens(opt, par);
+function opt = probesEligo_01(opt, par)
 
 % Add attenuators and terminal sinks
 % Here the second return value of the addSink function is used.
@@ -15,10 +15,10 @@ function opt = probeSens(opt, par);
 % OMCt: transmission to the OMC
 
 
-opt = addSink(opt, 'AttREFL', 0.997); %tuned for 35W
-opt = addSink(opt, 'AttPOX',  0.9967);
-opt = addSink(opt, 'AttPOY',  0.9967);
-opt = addSink(opt, 'AttAS',   0.89);  % not tuned yet
+opt = addSink(opt, 'AttREFL', 0.997);
+opt = addSink(opt, 'AttPOX',  0.965);
+opt = addSink(opt, 'AttPOY',  0.965);
+opt = addSink(opt, 'AttAS',   0);  % not tuned yet
 opt = addSink(opt, 'AttOMCt',  0); % not tuned yet
 opt = addSink(opt, 'AttOMCr',  0); % not tuned yet
 
@@ -41,12 +41,12 @@ opt = addSink(opt, 'OMCr');
 
 % REFL
 opt = addLink(opt, 'PR', 'bk', 'AttREFL', 'in', 5);
-[opt, nREFL_A, nREFL_B] = addReadoutGouyAB(opt, 'REFL', par.gouy.REFL_A, par.gouy.REFL_B, 'AttREFL');
+[opt, nREFL_A, nREFL_B] = addReadoutGouy(opt, 'REFL', par.gouy.REFL, 'AttREFL');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % POX
 opt = addLink(opt, 'IX', 'po', 'AttPOX', 'in', 5);
-[opt, nPOX_A, nPOX_B] = addReadoutGouyAB(opt, 'POX', par.gouy.POX_A, par.gouy.POX_B, 'AttPOX');
+[opt, nPOX_A, nPOX_B] = addReadoutGouy(opt, 'POX', par.gouy.POX, 'AttPOX');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % POY
@@ -61,9 +61,7 @@ opt = addLink(opt, 'EY', 'bk', nTRY, 'in', 5);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % AS Asymmetric port (before the OMC)
 opt = addLink(opt, 'ASsplit', 'bk', 'AttAS', 'in', 1);
-%[opt, nAS_A, nAS_B] = addReadoutGouy(opt, 'AS', par.gouy.AS, 'AttAS');
-[opt, nAS_A, nAS_B] = addReadoutGouyAB(opt, 'AS', par.gouy.AS_A, par.gouy.AS_B, 'AttAS');
-
+[opt, nAS_A, nAS_B] = addReadoutGouy(opt, 'AS', par.gouy.AS, 'AttAS');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Reflection from the OMC (OMCr)
@@ -260,17 +258,8 @@ opt = addProbeIn(opt, 'OMCt_B QP', nOMCt_B, 'in', fp, par.phi.OMCt_BP + 90);	% f
 opt = addProbeIn(opt, 'OMCt_B I2', nOMCt_B, 'in', f2, par.phi.OMCt_B2);        % f2 demod Q
 opt = addProbeIn(opt, 'OMCt_B Q2', nOMCt_B, 'in', f2, par.phi.OMCt_B2 + 90);   % f2 demod Q
 
+
+
 % Transmitted DC signals
 opt = addProbeIn(opt, 'TRX DC', nTRX, 'in', 0, 0);            % DC
 opt = addProbeIn(opt, 'TRY DC', nTRY', 'in', 0, 0);            % DC
-
-
-% add unphysical intra-cavity probes
-opt = addProbeIn(opt, 'IX_DC', 'IX', 'fr', 0, 0);
-opt = addProbeIn(opt, 'EX_DC', 'EX', 'fr', 0, 0);
-opt = addProbeIn(opt, 'IY_DC', 'IY', 'fr', 0, 0);
-opt = addProbeIn(opt, 'EY_DC', 'EY', 'fr', 0, 0);
-opt = addProbeIn(opt, 'PR_DC', 'PR', 'fr', 0, 0);
-opt = addProbeIn(opt, 'BS_DC', 'BS', 'frA', 0, 0);
-
-

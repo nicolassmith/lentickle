@@ -11,6 +11,21 @@ function lentickle = lentickleEligo(opt,darmsensor)
 % mirrDrive - map from mirrors to Optickle drive indeces
 
 % optickle probe serial numbers of relevant sensors
+
+par00 = strcmp(getProbeName(opt,1),'REFL DC');
+
+if par00
+nASI =  getProbeNum(opt, 'AS I1');
+nASQ =  getProbeNum(opt, 'AS Q1');
+nPOXI =  getProbeNum(opt, 'POX I1');
+nPOXQ =  getProbeNum(opt, 'POX Q1');
+nREF1I =  getProbeNum(opt, 'REFL I1');
+nREF1Q =  getProbeNum(opt, 'REFL Q1');
+nREF2I =  getProbeNum(opt, 'REFL I2');
+nREF2Q =  getProbeNum(opt, 'REFL Q2');
+nOMCPD =  getProbeNum(opt, 'OMCT DC');
+else
+
 nASI =  getProbeNum(opt, 'AS_A I1');
 nASQ =  getProbeNum(opt, 'AS_A Q1');
 nPOXI =  getProbeNum(opt, 'POX_A I1');
@@ -20,7 +35,7 @@ nREF1Q =  getProbeNum(opt, 'REFL_A Q1');
 nREF2I =  getProbeNum(opt, 'REFL_A I2');
 nREF2Q =  getProbeNum(opt, 'REFL_A Q2');
 nOMCPD =  getProbeNum(opt, 'OMCt_A DC');
-
+end
 
 % get the serial numbers of optics
 pp.mirrNames = {'EX', 'EY', 'IX', 'IY', 'BS','PR','AM','PM'};
@@ -107,7 +122,8 @@ pp.dofSens = [  0    0    0   0  ; %ASI
                 omg  0    0   0  ];%OMCPD_SUM
 
                % DARM  MICH   PRC       CM 
-pp.gainDof = [ -.483   -137   2.82e8   4.4e7]; 
+%pp.gainDof = [ -.483   -137   2.82e8   4.4e7]; 
+pp.gainDof = [ -.483   -137   2.82e8   -8.4e5]; 
 
 pp.setUgfDof = [ 185    35    35       NaN]; %choose UGF for each DOF
 

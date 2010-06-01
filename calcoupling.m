@@ -5,7 +5,7 @@ eligoModel; %create results
 
 % calibrate OMC_PD in terms of DARM meters
 
-calOMC_DARMm = 1./((pickleTF(results,'EX','OMC_PD','cl')-pickleTF(results,'EY','OMC_PD','cl'))/2);
+calOMC_DARMm = 1./((pickleTF(results,'EX','OMC_PD','cl')-pickleTF(results,'EY','OMC_PD','cl')));
 
 % calibrate phase to frequency
 
@@ -31,7 +31,7 @@ eligoModel; %create results
 
 % calibrate OMC_PD in terms of DARM meters
 
-calASQ_DARMm = 1./((pickleTF(results,'EX','AS_Q','cl')-pickleTF(results,'EY','AS_Q','cl'))/2);
+calASQ_DARMm = 1./((pickleTF(results,'EX','AS_Q','cl')-pickleTF(results,'EY','AS_Q','cl')));
 
 % get AM noise coupling
 

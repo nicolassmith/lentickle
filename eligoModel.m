@@ -1,11 +1,11 @@
 % creates eLIGO lentickle model
 
 % frequency domain
-f_numpoints = 1000;
+f_numpoints = 200;
 f_upperLimit = 7500;
 f_lowerLimit = 10;
 
-%darmsens = 'omc'; %use omc
+darmsens = 'omc'; %use omc
 
 % set up path
 addpath(genpath('~/ligo/sim/Optickle'));
@@ -27,7 +27,7 @@ f = f.';
 
 %f = [f;30000];
 
-use_saved = 1;
+use_saved = 0;
 
 if use_saved
     load('ticklesaved.mat') 
@@ -57,10 +57,10 @@ results = lentickleEngine(lentickle,[],f,sigAC,mMech);
 
 %% noise coupling
 % 
-% darmol = squeeze(results.errOL(1,1,:));
-% michol = squeeze(results.errOL(2,2,:));
-% prcol = squeeze(results.errOL(3,3,:));
-% carmol = squeeze(results.errOL(4,4,:));
+darmol = squeeze(results.errOL(1,1,:));
+michol = squeeze(results.errOL(2,2,:));
+prcol = squeeze(results.errOL(3,3,:));
+carmol = squeeze(results.errOL(4,4,:));
 
 % % find relative calibration of AS_Q and OMC_PD
 % 
@@ -88,7 +88,7 @@ results = lentickleEngine(lentickle,[],f,sigAC,mMech);
 % figure(3)
 % SRSbode([f,am2dc],[f,am2rf])
 % legend('DC PM coupling','RF PM coupling')
-%
-% figure(1)
-% SRSbode([f,carmol],[f,darmol],[f,prcol],[f,michol])
-% legend('cm olg','darm olg','prc olg','mich olg')
+
+figure(1)
+SRSbode([f,carmol],[f,darmol],[f,prcol],[f,michol])
+legend('cm olg','darm olg','prc olg','mich olg')
