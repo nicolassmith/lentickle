@@ -27,13 +27,13 @@ f = 150;
 
 hX = getTF(sigAC, nAS_25_Q, nEX);
 hY = getTF(sigAC, nAS_25_Q, nEY);
-hDARMasq = hY - hX;
+hDARMasq = hX - hY;
 
 hX = getTF(sigAC, nAS_25_I, nEX);
 hY = getTF(sigAC, nAS_25_I, nEY);
 hDARMasi = hX - hY;
 
-as_phase = findBestPhase(hDARMasq,hDARMasi)
+as_phase = -1*findBestPhase(hDARMasq,hDARMasi)
 
 hX = getTF(sigAC, nREFL_61_I, nEX);
 hY = getTF(sigAC, nREFL_61_I, nEY);

@@ -12,7 +12,7 @@ par.phi.phPOX1 = 51.948;%-19.0;
 
 par.phi.phPOY1 = 0;
 
-par.phi.phAS1 = 124.6410; %22.1;
+par.phi.phAS1 = -55.351; %22.1;
 par.phi.phAS2 = 0;
 
 par.phi.phOMCR1 = 0;
