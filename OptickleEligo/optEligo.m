@@ -125,11 +125,21 @@ opt = addTelescope(opt, 'OMCtel1', fL);
 
 % using realistic values, from T080144
 
-OMC_perimeter = 1.077;
-opt = addMirror(opt, 'OMCa', 0, 1/1.96, 8300e-6, 30e-6);
-opt = addMirror(opt, 'OMCb', 0, 1/1.96, 8300e-6, 30e-6);
-opt = addLink(opt, 'OMCa', 'fr', 'OMCb', 'fr', OMC_perimeter/2);
-opt = addLink(opt, 'OMCb', 'fr', 'OMCa', 'fr', OMC_perimeter/2);
+
+% [opt, sn] = addMirror(opt, name, aio, Chr, Thr, Lhr, Rar, Lmd, Nmd)
+opt = addMirror(opt, 'OMCa', 6, 0, 8368e-6, 10e-6); %input coupler
+opt = addMirror(opt, 'OMCb', 6, 0, 8297e-6, 10e-6); %ouput coupler
+opt = addMirror(opt, 'OMCp', 6, 1/1.96, 25e-6, 10e-6); %PZT
+opt = addMirror(opt, 'OMCh', 6, 1/1.96, 33e-6, 10e-6); %heater
+opt = addLink(opt, 'OMCa', 'fr', 'OMCp', 'fr', .266);
+opt = addLink(opt, 'OMCp', 'fr', 'OMCb', 'fr', .284);
+opt = addLink(opt, 'OMCb', 'fr', 'OMCh', 'fr', .275);
+opt = addLink(opt, 'OMCh', 'fr', 'OMCa', 'fr', .271);
+% OMC_perimeter = 1.077;
+% opt = addMirror(opt, 'OMCa', 0, 1/1.96, 8300e-6, 30e-6);
+% opt = addMirror(opt, 'OMCb', 0, 1/1.96, 8300e-6, 30e-6);
+% opt = addLink(opt, 'OMCa', 'fr', 'OMCb', 'fr', OMC_perimeter/2);
+% opt = addLink(opt, 'OMCb', 'fr', 'OMCa', 'fr', OMC_perimeter/2);
 
 opt = addLink(opt, 'ASsplit', 'fr', 'OMCtel1', 'in', 2.5);
 opt = addLink(opt, 'OMCtel1', 'out', 'OMCa', 'bk', (fL - 0.036));
@@ -138,7 +148,7 @@ opt = addLink(opt, 'OMCtel1', 'out', 'OMCa', 'bk', (fL - 0.036));
 % tell Optickle to use this cavity basis
 opt = setCavityBasis(opt, 'IX', 'EX');
 opt = setCavityBasis(opt, 'IY', 'EY');
-opt = setCavityBasis(opt, 'OMCa', 'OMCb');
+%opt = setCavityBasis(opt, 'OMCa', 'OMCb');
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

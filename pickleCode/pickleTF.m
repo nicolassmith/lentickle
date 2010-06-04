@@ -51,7 +51,7 @@ function mTF = pickleTF(rslt, nameFrom, nameTo, varargin)
          nameFrom = 'sens'; % no wait, it's a sensor
          singFrom = singFrom - Nmirr;
           if singFrom > Nsens
-             nameFrom = 'dof'; % actually it's a dof
+             nameFrom = 'err'; % actually it's a dof
              singFrom = singFrom - Nsens;
              if ctrlFrom
                  nameFrom = 'ctrl'; % really, really it's a ctrl
@@ -64,7 +64,7 @@ function mTF = pickleTF(rslt, nameFrom, nameTo, varargin)
           nameTo = 'sens'; % no wait, it's a sensor
           singTo = singTo - Nmirr;
             if singTo > Nsens
-              nameTo = 'dof'; % actually it's a dof
+              nameTo = 'err'; % actually it's a dof
               singTo = singTo - Nsens;
               if ctrlTo
                  nameTo = 'ctrl'; % really, really it's a ctrl
@@ -95,6 +95,7 @@ function mTF = pickleTF(rslt, nameFrom, nameTo, varargin)
   end
 
   % get initial matrix
+  rslt.Nerr = rslt.Ndof; % The next line looks for Nerr, which doesn't exist
   if nIn == nOut
     mTF = eye(rslt.(['N' nameFrom]));
   else

@@ -1,4 +1,4 @@
-% makes intensity noise coupling plots for various offsets
+% frequency coupling plots
 
 setupLentickle;
 
@@ -10,7 +10,7 @@ f = logspace(log10(f_lowerLimit),log10(f_upperLimit),f_numpoints).';
 
 inPower = 8;
 
-offsets = [1 5 10 15 20];%[ 1 -20 -10 -7 7 10 20 ];
+offsets = [1 10];%[ 1 -20 -10 -7 7 10 20 ];
 offsets = offsets*1e-12;
 
 Nplot = length(offsets);
@@ -32,17 +32,19 @@ TF{Nplot} = [];
 
 for kk = 1:Nplot
     result(kk) = getEligoResults(f,inPower,offsets(kk),sensors{kk});
+    CMclg = pickleTF(result(kk),'CM','CM','cl');
+    calFreq_Phase = 1i*f;
     switch sensors{kk}
         case 'asq'
             calASQ_DARMm = 1./((pickleTF(result(kk),'EX','AS_Q','cl')-pickleTF(result(kk),'EY','AS_Q','cl')));
-            TF{kk} = [f,calTF(pickleTF(result(kk),'AM','AS_Q','cl'),calASQ_DARMm)];
+            TF{kk} = [f,calTF(pickleTF(result(kk),'PM','AS_Q','cl'),calASQ_DARMm,CMclg.*calFreq_Phase)];
         case 'omc'
             calOMC_DARMm = 1./((pickleTF(result(kk),'EX','OMC_PD','cl')-pickleTF(result(kk),'EY','OMC_PD','cl')));
-            TF{kk} = [f,calTF(pickleTF(result(kk),'AM','OMC_PD','cl'),calOMC_DARMm)];
+            TF{kk} = [f,calTF(pickleTF(result(kk),'PM','OMC_PD','cl'),calOMC_DARMm,CMclg.*calFreq_Phase)];
     end
 end
 
-figure(22)
+figure(42)
 SRSbode(TF{:})
 
 % build legend
@@ -61,5 +63,5 @@ for kk = 1:Nplot
 end
 
 legend(TFleg{:})
-title('Intensity Noise Coupling')
-ylabel('Magnitude (m/RIN)')
+title('Frequency Noise Coupling')
+ylabel('Magnitude (m/Hz)')
