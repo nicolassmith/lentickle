@@ -43,15 +43,19 @@ end
 
 % drive matrix (LSC output matrix)
 d = sqrt(2)/2;
-%                    DARM MICH PRC CM
-pp.dofMirr =       [  1    0    0   0  ; %EX
-                     -1    0    0   0  ; %EY
-                      0    0    0   0  ; %IX
-                      0    0    0   0  ; %IY
-                      0    1    0   0  ; %BS
-                      0   -d    1   0  ; %PR
-                      0    0    0   0  ; %AM
-                      0    0    0   1 ]; %PM
+
+% mich subtraction
+ms = 0.0105;
+ps = 0;%-.5e-4;
+%                    DARM MICH  PRC  CM
+pp.dofMirr =       [  1   ms/2  ps/2 0  ; %EX
+                     -1  -ms/2 -ps/2 0  ; %EY
+                      0    0    0    0  ; %IX
+                      0    0    0    0  ; %IY
+                      0    1    0    0  ; %BS
+                      0   -d    1    0  ; %PR
+                      0    0    0    0  ; %AM
+                      0    0    0    1 ]; %PM
                           
 pp.mirrDrive = pp.driveMirr.';
 pp.dofDrive  = pp.mirrDrive * pp.dofMirr;

@@ -94,10 +94,19 @@ function mTF = pickleTF(rslt, nameFrom, nameTo, varargin)
     error('Invalid output name "%s".', nameTo) %bug
   end
 
+  % make sure it can find the number of err or ctrl channels
+  switch nameFrom
+      case 'err'
+          nameFromTemp = 'dof';
+      case 'ctrl'
+          nameFromTemp = 'dof';
+      otherwise
+          nameFromTemp = nameFrom;
+  end
+  
   % get initial matrix
-  rslt.Nerr = rslt.Ndof; % The next line looks for Nerr, which doesn't exist
   if nIn == nOut
-    mTF = eye(rslt.(['N' nameFrom]));
+    mTF = eye(rslt.(['N' nameFromTemp]));
   else
     nNext = nIn + 1;
     if nNext > rslt.Ntp
