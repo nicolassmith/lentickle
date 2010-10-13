@@ -69,7 +69,6 @@ function rslt = lentickleEngine(lentickle, pos, f, sigAC, mMech)
       end
       [fDelta,fIndex] = min(abs(f-setUgfDof(m)));
       ugfDof(m) = f(fIndex);
-      
       dofGain = sensDof * probeSens * sigAC(:, :, fIndex) * mirrDrive *...
             diag(hPend(fIndex, :)) * diag(hMirr(fIndex, :)) * dofMirr *...
             diag(hCtrl(fIndex, :));

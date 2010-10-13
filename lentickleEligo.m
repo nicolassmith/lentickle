@@ -22,13 +22,14 @@ nREF2Q =  getProbeNum(opt, 'REFL Q2');
 nOMCPD =  getProbeNum(opt, 'OMCT DC');
 
 % get the serial numbers of optics
-pp.mirrNames = {'EX', 'EY', 'IX', 'IY', 'BS','PR','AM','PM'};
+pp.mirrNames = {'EX', 'EY', 'IX', 'IY', 'BS','PR','AM','PM','Mod1.amp','Mod1.phase'}; % need to make special case for drive type 2
 
 pp.Nmirr = numel(pp.mirrNames);
 pp.vMirr = zeros(1, pp.Nmirr);
 pp.driveMirr = sparse(pp.Nmirr, opt.Ndrive);
 for n=1:pp.Nmirr
-  pp.vMirr(n) = getDriveIndex(opt, pp.mirrNames{n});
+  mirrname_withdrive = split('.',pp.mirrNames{n}); %hack to allow modulator second inputs
+  pp.vMirr(n) = getDriveIndex(opt, mirrname_withdrive{:});
   pp.driveMirr(n, pp.vMirr(n)) = 1;
 end
 
@@ -55,7 +56,9 @@ pp.dofMirr =       [  1   ms/2  ps/2 0  ; %EX
                       0    1    0    0  ; %BS
                       0   -d    1    0  ; %PR
                       0    0    0    0  ; %AM
-                      0    0    0    1 ]; %PM
+                      0    0    0    1  ; %PM
+                      0    0    0    0  ; %Osc Amp
+                      0    0    0    0 ]; %Osc Phase
                           
 pp.mirrDrive = pp.driveMirr.';
 pp.dofDrive  = pp.mirrDrive * pp.dofMirr;
@@ -177,13 +180,13 @@ pp.pend = filtZPG([], filtRes(0.75, 50.0025), 1, 0);
 
 pp.integrator = filtZPK([0],[],1);%#ok
  
-pp.pendFilt = [pp.pend, pp.pend, pp.pend, pp.pend, pp.pend, pp.pend, pp.unityFilt, pp.integrator];
+pp.pendFilt = [pp.pend, pp.pend, pp.pend, pp.pend, pp.pend, pp.pend, pp.unityFilt, pp.integrator,pp.unityFilt,pp.unityFilt];
 
 % mirrFilt defines compensation filters (approximating the inverse of the
 % mechanical response). This type of control design was not used in iLIGO.
 
 pp.mirrFilt = [pp.unityFilt,pp.unityFilt,pp.unityFilt,pp.unityFilt,...
-    pp.unityFilt,pp.unityFilt,pp.unityFilt,pp.unityFilt];
+    pp.unityFilt,pp.unityFilt,pp.unityFilt,pp.unityFilt,pp.unityFilt,pp.unityFilt];
 
 % Put opt and all the parameters in lentickle
 lentickle.param = pp;
