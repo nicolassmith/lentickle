@@ -12,7 +12,7 @@ f = logspace(log10(f_lowerLimit),log10(f_upperLimit),f_numpoints).';
 
 inPower = 8;
 
-offsets = [1 -10 5 10];%[ 1 -20 -10 -7 7 10 20 ];
+offsets = [.1 10];%[ 1 -20 -10 -7 7 10 20 ];
 offsets = offsets*1e-12;
 
 Nplot = length(offsets);

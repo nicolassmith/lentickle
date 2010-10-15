@@ -22,7 +22,7 @@ nREF2Q =  getProbeNum(opt, 'REFL Q2');
 nOMCPD =  getProbeNum(opt, 'OMCT DC');
 
 % get the serial numbers of optics
-pp.mirrNames = {'EX', 'EY', 'IX', 'IY', 'BS','PR','AM','PM','Mod1.amp','Mod1.phase'}; % need to make special case for drive type 2
+pp.mirrNames = {'EX', 'EY', 'IX', 'IY', 'BS','PR','AM','PM','Mod1.amp','Mod1.phase'}; 
 
 pp.Nmirr = numel(pp.mirrNames);
 pp.vMirr = zeros(1, pp.Nmirr);

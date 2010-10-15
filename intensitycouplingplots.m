@@ -12,7 +12,7 @@ f = logspace(log10(f_lowerLimit),log10(f_upperLimit),f_numpoints).';
 
 inPower = 8;
 
-offsets = -1*[.1 5 10 15 20];%[ 1 -20 -10 -7 7 10 20 ];
+offsets = -1*[.1 10];%[ 1 -20 -10 -7 7 10 20 ];
 offsets = offsets*1e-12;
 
 Nplot = length(offsets);
@@ -44,7 +44,7 @@ for kk = 1:Nplot
     end
 end
 
-figure(23)
+figure(93)
 SRSbode(TF{:})
 
 % build legend
