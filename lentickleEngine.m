@@ -3,7 +3,7 @@
 %   sigAC and mMech will be generated if not given as arguments
 %
 
-function rslt = lentickleEngine(lentickle, pos, f, sigAC, mMech)
+function [rslt,fDC,sigDC,sigAC, mMech] = lentickleEngine(lentickle, pos, f, sigAC, mMech)
   
   pp = lentickle.param;
 
@@ -13,10 +13,20 @@ function rslt = lentickleEngine(lentickle, pos, f, sigAC, mMech)
   Nsens = pp.Nsens;
   Ndof = pp.Ndof;
   Nmirr = pp.Nmirr;
+  Ndrive = lentickle.opt.Ndrive;
   
   % call tickle to compute fields and TFs
   if( nargin < 5 )
-    [fDC,sigDC,sigAC, mMech] = tickle(lentickle.opt, pos, f);
+      [fDC,sigDC,sigAC,mMech] = tickle(lentickle.opt, pos, f, pp.vMirr);
+      mirrReduce = zeros(Nmirr,Ndrive);
+      for jj = 1:length(pp.vMirr)
+          mirrReduce(jj,pp.vMirr(jj)) = 1;
+      end
+      
+      % now we take out the empty parts of the matricies
+      sigAC = mult3D2D(sigAC,mirrReduce);
+      
+      mMech = mult2D3D(mirrReduce.',mult3D2D(mMech,mirrReduce));
   end
   
   % get loop TFs
@@ -63,12 +73,14 @@ function rslt = lentickleEngine(lentickle, pos, f, sigAC, mMech)
     ugfDof = setUgfDof;
 
     for m = 1:Ndof
-      % find the nearest f index and use that
-      if isnan(setUgfDof(m))
+      if isnan(setUgfDof(m)) %skip NaNs because they mean don't change it
           continue
       end
+      % find the nearest f index and use that
       [fDelta,fIndex] = min(abs(f-setUgfDof(m)));
       ugfDof(m) = f(fIndex);
+      
+      % calculate the current gain at that frequency
       dofGain = sensDof * probeSens * sigAC(:, :, fIndex) * mirrDrive *...
             diag(hPend(fIndex, :)) * diag(hMirr(fIndex, :)) * dofMirr *...
             diag(hCtrl(fIndex, :));
@@ -77,6 +89,7 @@ function rslt = lentickleEngine(lentickle, pos, f, sigAC, mMech)
       
       dofSign = sign(angle(dofGain));
       
+      % divide out the gain to make it 1 at the desired frequency
       sensDof(m,:) = pp.sensDof(m,:) / abs(dofGain) * dofSign;
     end
     
@@ -155,3 +168,41 @@ function rslt = lentickleEngine(lentickle, pos, f, sigAC, mMech)
     nameTmp(1) = upper(nameTmp(1));
     rslt.testPointsUpper{n} = nameTmp;
   end
+  
+end
+
+function Z = mult3D2D(X,Y)
+
+    [A,B,C] = size(X);
+    [B2,D]  = size(Y);
+    
+    if B ~= B2
+        error('The second length of the 3D matrix must match the first of the 2D')
+    end
+    
+    
+    %# calculate result in one big matrix
+    Z = reshape(reshape(permute(X, [2 1 3]), [A B*C]), [B A*C]).' * Y;
+
+    %'# split into third dimension
+    Z = permute(reshape(Z.',[D A C]),[2 1 3]);
+end
+
+
+function Z = mult2D3D(Y,X)
+    %Z = permute( mult3D2D(permute(X,[2 1 3]),Y.') , [2,1,3]);
+
+    [A,B,C] = size(X);
+    [B2,D]  = size(Y);
+    
+    if A ~= D
+        error('The first length of the 3D matrix must match the second of the 2D')
+    end
+    
+    
+    %# calculate result in one big matrix
+    Z = Y * reshape(reshape(permute(X, [2 1 3]), [A*C B]), [B*C A]).';
+
+    %'# split into third dimension
+    Z = permute(reshape(Z.',[B B2 C]),[2 1 3]);
+end

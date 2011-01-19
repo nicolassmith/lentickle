@@ -20,9 +20,9 @@ function [results,opt,fDC,sigDC,sigAC,mMech]...
     
     lentickle = lentickleEligo(opt,DARMsens);
     % tickle
-    [fDC,sigDC,sigAC,mMech] = tickle(lentickle.opt,posOffset,f);     
+    %[fDC,sigDC,sigAC,mMech] = tickle(lentickle.opt,posOffset,f);     
     
     % get loop calculations
-    results = lentickleEngine(lentickle,posOffset,f,sigAC,mMech);
+    [results,fDC,sigDC,sigAC,mMech] = lentickleEngine(lentickle,posOffset,f);%,sigAC,mMech);
     
 end
