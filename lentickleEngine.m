@@ -1,4 +1,4 @@
-% pickle.result = pickleEngine(pickle, pos, f, sigAC, mMech)
+% result = lentickleEngine(pickle, pos, f, sigAC, mMech)
 %   generate pickle result matrices, TFs, etc.
 %   sigAC and mMech will be generated if not given as arguments
 %
