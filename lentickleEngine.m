@@ -14,19 +14,12 @@ function [rslt,fDC,sigDC,sigAC, mMech] = lentickleEngine(lentickle, pos, f, sigA
   Ndof = pp.Ndof;
   Nmirr = pp.Nmirr;
   Ndrive = lentickle.opt.Ndrive;
+  mirrReduce = eye(Ndrive);
   
   % call tickle to compute fields and TFs
   if( nargin < 5 )
       [fDC,sigDC,sigAC,mMech] = tickle(lentickle.opt, pos, f, pp.vMirr);
-      mirrReduce = zeros(Nmirr,Ndrive);
-      for jj = 1:length(pp.vMirr)
-          mirrReduce(jj,pp.vMirr(jj)) = 1;
-      end
-      
-      % now we take out the empty parts of the matricies
-      sigAC = mult3D2D(sigAC,mirrReduce);
-      
-      mMech = mult2D3D(mirrReduce.',mult3D2D(mMech,mirrReduce));
+      mirrReduce = mirrReduce(pp.vMirr,:);
   end
   
   % get loop TFs
@@ -81,7 +74,7 @@ function [rslt,fDC,sigDC,sigAC, mMech] = lentickleEngine(lentickle, pos, f, sigA
       ugfDof(m) = f(fIndex);
       
       % calculate the current gain at that frequency
-      dofGain = sensDof * probeSens * sigAC(:, :, fIndex) * mirrDrive *...
+      dofGain = sensDof * probeSens * sigAC(:, :, fIndex) * mirrReduce * mirrDrive *...
             diag(hPend(fIndex, :)) * diag(hMirr(fIndex, :)) * dofMirr *...
             diag(hCtrl(fIndex, :));
       
@@ -106,7 +99,7 @@ function [rslt,fDC,sigDC,sigAC, mMech] = lentickleEngine(lentickle, pos, f, sigA
 
   for n = 1:Nfreq
     % use maps to produce mirrSens
-    mirrSens = probeSens * sigAC(:, :, n) * mirrDrive;
+    mirrSens = probeSens * sigAC(:, :, n) * mirrReduce * mirrDrive;
     
     % make piecewise TFs
     errCtrl = diag(hCtrl(n, :));
@@ -140,7 +133,7 @@ function [rslt,fDC,sigDC,sigAC, mMech] = lentickleEngine(lentickle, pos, f, sigA
     rslt.corrCL(:, :, n) = inv(eyeMirr - corrOL);
     rslt.mirrCL(:, :, n) = inv(eyeMirr - mirrOL);
     
-    rslt.mMirr(:, :, n) = driveMirr * mMech(:, :, n) * mirrDrive;
+    rslt.mMirr(:, :, n) = driveMirr * mirrReduce.' * mMech(:, :, n) * mirrReduce * mirrDrive;
     
 %    rslt.mirrSpot(:, :, n) = probeSpot * sigAC(:, :, n) * mirrDrive;
   end

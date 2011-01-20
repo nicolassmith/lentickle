@@ -18,6 +18,10 @@ function [results,opt,fDC,sigDC,sigAC,mMech]...
     posOffset(getDriveIndex(opt,'EX')) =  DARMoffset/2;
     posOffset(getDriveIndex(opt,'EY')) = -DARMoffset/2;
     
+    % phase eligo
+    
+    opt = phaseEligo(opt,posOffset);
+    
     lentickle = lentickleEligo(opt,DARMsens);
     % tickle
     %[fDC,sigDC,sigAC,mMech] = tickle(lentickle.opt,posOffset,f);     
