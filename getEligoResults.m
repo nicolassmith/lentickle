@@ -1,4 +1,4 @@
-function [results,opt,fDC,sigDC,sigAC,mMech]...
+function [results,opt,lentickle]...
                         = getEligoResults(f,inPower,DARMoffset,DARMsens)
     % produces an eLIGO lentickle results structure
     %
@@ -27,6 +27,6 @@ function [results,opt,fDC,sigDC,sigAC,mMech]...
     %[fDC,sigDC,sigAC,mMech] = tickle(lentickle.opt,posOffset,f);     
     
     % get loop calculations
-    [results,fDC,sigDC,sigAC,mMech] = lentickleEngine(lentickle,posOffset,f);%,sigAC,mMech);
+    results = lentickleEngine(lentickle,posOffset,f);%,sigAC,mMech);
     
 end

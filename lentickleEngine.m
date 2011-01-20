@@ -3,7 +3,7 @@
 %   sigAC and mMech will be generated if not given as arguments
 %
 
-function [rslt,fDC,sigDC,sigAC, mMech] = lentickleEngine(lentickle, pos, f, sigAC, mMech)
+function rslt = lentickleEngine(lentickle, pos, f, sigAC, mMech)
   
   pp = lentickle.param;
 
