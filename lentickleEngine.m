@@ -163,39 +163,3 @@ function [rslt,fDC,sigDC,sigAC, mMech] = lentickleEngine(lentickle, pos, f, sigA
   end
   
 end
-
-function Z = mult3D2D(X,Y)
-
-    [A,B,C] = size(X);
-    [B2,D]  = size(Y);
-    
-    if B ~= B2
-        error('The second length of the 3D matrix must match the first of the 2D')
-    end
-    
-    
-    %# calculate result in one big matrix
-    Z = reshape(reshape(permute(X, [2 1 3]), [A B*C]), [B A*C]).' * Y;
-
-    %'# split into third dimension
-    Z = permute(reshape(Z.',[D A C]),[2 1 3]);
-end
-
-
-function Z = mult2D3D(Y,X)
-    %Z = permute( mult3D2D(permute(X,[2 1 3]),Y.') , [2,1,3]);
-
-    [A,B,C] = size(X);
-    [B2,D]  = size(Y);
-    
-    if A ~= D
-        error('The first length of the 3D matrix must match the second of the 2D')
-    end
-    
-    
-    %# calculate result in one big matrix
-    Z = Y * reshape(reshape(permute(X, [2 1 3]), [A*C B]), [B*C A]).';
-
-    %'# split into third dimension
-    Z = permute(reshape(Z.',[B B2 C]),[2 1 3]);
-end
