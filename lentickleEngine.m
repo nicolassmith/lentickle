@@ -14,9 +14,9 @@ function rslt = lentickleEngine(lentickle, pos, f, sigAC, mMech)
   Ndof = pp.Ndof;
   Nmirr = pp.Nmirr;
   Ndrive = lentickle.opt.Ndrive;
-  mirrReduce = eye(Ndrive);
-  
+    
   % call tickle to compute fields and TFs
+  mirrReduce = eye(Ndrive);
   if( nargin < 5 )
       [fDC,sigDC,sigAC,mMech] = tickle(lentickle.opt, pos, f, pp.vMirr);
       mirrReduce = mirrReduce(pp.vMirr,:);
