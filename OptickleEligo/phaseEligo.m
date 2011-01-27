@@ -12,23 +12,23 @@ function opt = phaseEligo(opt,pos)
     
     % primary probes to tune
     
-    AS_Q.name = 'AS Q1';
-    AS_Q.compName = 'AS I1';
+    AS_Q.Iname = 'AS I1';
+    AS_Q.Qname = 'AS Q1';
     AS_Q.IorQ = 'Q';
     AS_Q.dof = 'DARM';
     
-    REFL1_I.name = 'REFL I1';
-    REFL1_I.compName = 'REFL Q1';
+    REFL1_I.Iname = 'REFL I1';
+    REFL1_I.Qname = 'REFL Q1';
     REFL1_I.IorQ = 'I';
     REFL1_I.dof = 'CARM';
     
-    REFL2_I.name = 'REFL I2';
-    REFL2_I.compName = 'REFL Q2';
+    REFL2_I.Iname = 'REFL I2';
+    REFL2_I.Qname = 'REFL Q2';
     REFL2_I.IorQ = 'I';
     REFL2_I.dof = 'CARM';
     
-    POX_I.name = 'POX I1';
-    POX_I.compName = 'POX Q1';
+    POX_I.Iname = 'POX I1';
+    POX_I.Qname = 'POX Q1';
     POX_I.IorQ = 'I';
     POX_I.dof = 'PRC';
     
@@ -41,8 +41,8 @@ function opt = phaseEligo(opt,pos)
     for sensor = sensList
         iSensor = iSensor + 1;
         
-        mIQ{iSensor,1} = sensor.name;
-        mIQ{iSensor,2} = sensor.compName;
+        mIQ{iSensor,1} = sensor.Iname;
+        mIQ{iSensor,2} = sensor.Qname;
         mIQ{iSensor,3} = sensor.IorQ;
         
         % build the DOF drive matrix for tuning sensors
