@@ -3,16 +3,16 @@
 setupLentickle;
 
 f_numpoints = 200;
-f_upperLimit = 5000;
-f_lowerLimit = 20;
+f_upperLimit = 10000;
+f_lowerLimit = 1;
 
 olcl = 'cl'; %closed loop or open loop
 
 f = logspace(log10(f_lowerLimit),log10(f_upperLimit),f_numpoints).';
 
-inPower = 8;
+inPower = 130;
 
-offsets = -1*[.1 10];%[ 1 -20 -10 -7 7 10 20 ];
+offsets = [.1 1 10];%[ 1 -20 -10 -7 7 10 20 ];
 offsets = offsets*1e-12;
 
 Nplot = length(offsets);

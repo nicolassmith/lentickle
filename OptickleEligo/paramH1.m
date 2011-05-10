@@ -46,10 +46,10 @@ par.PR.pos = 0;
 
 % Arm cavity Finesse and imbalance
 Ltm = 70e-6;
-dLoss = 25e-6;         % determines the contrast defect
+dLoss = 0;%25e-6;         % determines the contrast defect
 
 % HR Transmissivities
-par.IX.T = 0.02818;%0.0279; % DC readout AM coupling depends greatly on these
+par.IX.T = 0.028;%18;%0.0279; % DC readout AM coupling depends greatly on these
 par.IY.T = 0.028;  %0.0285; % (new values from COC website)
 par.BS.T = 0.5;
 
@@ -59,7 +59,7 @@ par.EY.T = 10e-6;
 par.PR.T = 0.027;
 
 % AR Surfaces
-par.IX.Rar = 800e-6;
+par.IX.Rar = 80e-6;
 par.IY.Rar = 80e-6;
 par.EX.Rar = 100e-6;
 par.EY.Rar = 100e-6;
@@ -76,7 +76,7 @@ par.PR.L = 100e-6;
 
 % mechanical parameters
 par.w = 2 * pi * 0.75; % resonance frequency mirror (rad/s)
-par.mass  = 10.5;		   % mass mirror (kg)
+par.mass  = 40;%10.5;		   % mass mirror (kg)
 
 par.w_pit = 2 * pi * 0.5;   % pitch mode resonance frequency
 
