@@ -49,7 +49,6 @@ function rslt = lentickleEngine(lentickle, pos, f, sigAC, mMech)
   rslt.corrSens = zeros(Nsens, Nmirr, Nfreq);
   
   rslt.mMirr = zeros(Nmirr, Nmirr, Nfreq);
-  rslt.mirrSpot = zeros(Nmirr, Nmirr, Nfreq);
   
   % compute result matrices for each frequency
   probeSens = pp.probeSens;
@@ -135,7 +134,6 @@ function rslt = lentickleEngine(lentickle, pos, f, sigAC, mMech)
     
     rslt.mMirr(:, :, n) = driveMirr * mirrReduce.' * mMech(:, :, n) * mirrReduce * mirrDrive;
     
-%    rslt.mirrSpot(:, :, n) = probeSpot * sigAC(:, :, n) * mirrDrive;
   end
 
   % reset scale warning state
