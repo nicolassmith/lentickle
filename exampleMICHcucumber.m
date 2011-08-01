@@ -149,7 +149,7 @@ function cucumber = exampleMICHcucumber(opt)
     % zeros at 1Hz and a few poles at 1kHz.
     
     unityFilt = filtZPK([],[],1); % just a flat TF for non-mirrors
-    compFilt = filtZPK([1,1],[1000,1000,1000],1);
+    compFilt = filtZPK([1,1],[1000,1000,1000],1); % dumb compensation
     
                % MX       MY       BS       AM        PM        OSCAM     OSCPM
     mirrFilt = [ compFilt compFilt compFilt unityFilt unityFilt unityFilt unityFilt ];
