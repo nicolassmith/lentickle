@@ -49,7 +49,7 @@ function cucumber = exampleMICHcucumber(opt)
     
     % Our opt model has opt.Nprobe probes, and we will choose just 5
     % sensors. These will be AS and REFL at RF (I and Q) as well as AS at
-    % DC.
+    % DC. So probeSens will be a ?5xNprobe? matrix.
     %
     % probeSens is the matrix that translates the probes into the sensors.
     % Let's just make a temporary variable which shows how probes become
