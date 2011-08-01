@@ -5,21 +5,31 @@
 
 function rslt = lentickleEngine(lentickle, pos, f, sigAC, mMech)
   
-  pp = lentickle.param;
-
+  if(any(strcmp(fieldnames(lentickle),'param')))
+    pp = lentickle.param;
+  else
+    pp = lentickle;
+  end
+  
+  opt = lentickle.opt;
   
   % sizes of things
   Nfreq = numel(f);
-  Nsens = pp.Nsens;
-  Ndof = pp.Ndof;
-  Nmirr = pp.Nmirr;
-  Ndrive = lentickle.opt.Ndrive;
+  Nsens = size(pp.probeSens,1);
+  [Nmirr,Ndof] = size(pp.dofMirr);
+  Ndrive = opt.Ndrive;
+  
+  % which drives are used
+  vMirr = zeros(1,Nmirr);
+  for jMirr = 1:Nmirr
+      vMirr(jMirr) = find(pp.mirrDrive(:,jMirr),1);
+  end
     
   % call tickle to compute fields and TFs
   mirrReduce = eye(Ndrive);
   if( nargin < 5 )
-      [fDC,sigDC,sigAC,mMech] = tickle(lentickle.opt, pos, f, pp.vMirr);
-      mirrReduce = mirrReduce(pp.vMirr,:);
+      [fDC,sigDC,sigAC,mMech] = tickle(opt, pos, f, vMirr);
+      mirrReduce = mirrReduce(vMirr,:);
   end
   
   % get loop TFs
@@ -55,9 +65,6 @@ function rslt = lentickleEngine(lentickle, pos, f, sigAC, mMech)
   sensDof = pp.sensDof;
   dofMirr = pp.dofMirr;
   mirrDrive = pp.mirrDrive;
-  driveMirr = pp.driveMirr;
-  
-  
   
   % if desired, set UGF directly to desired value for each DOF
   if(any(strcmp(fieldnames(pp),'setUgfDof')))
@@ -132,15 +139,13 @@ function rslt = lentickleEngine(lentickle, pos, f, sigAC, mMech)
     rslt.corrCL(:, :, n) = inv(eyeMirr - corrOL);
     rslt.mirrCL(:, :, n) = inv(eyeMirr - mirrOL);
     
-    rslt.mMirr(:, :, n) = driveMirr * mirrReduce.' * mMech(:, :, n) * mirrReduce * mirrDrive;
+    rslt.mMirr(:, :, n) = mirrDrive.' * mirrReduce.' * mMech(:, :, n)...
+                        * mirrReduce * mirrDrive;
     
   end
 
   % reset scale warning state
   warning(sWarn.state, sWarn.identifier);
-  
-  % copy some parameter matrices
-  rslt.mirrDof = pp.mirrDof;
   
   % test point names
   rslt.testPoints = {'sens', 'err', 'ctrl', 'corr', 'mirr'};
