@@ -53,7 +53,10 @@ function cucumber = exampleMICHcucumber(opt)
     %
     % probeSens is the matrix that translates the probes into the sensors.
     % Let's just make a temporary variable which shows how probes become
-    % sensors, 
+    % sensors.
+    
+    %transProbeSens = { ASI, ASI
+                        
     
     
 end
