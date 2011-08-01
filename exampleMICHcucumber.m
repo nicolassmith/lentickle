@@ -78,14 +78,14 @@ function cucumber = exampleMICHcucumber(opt)
     
     %% The other boring matrix is mirrDrive
     
-                     %  mirrors     drives
-    mirrDrivePairs = {'MX',    'MX'
-                      'MY',    'MY'
-                      'BS',    'BS'
-                      'AM',    'AM'
-                      'PM',    'PM'
-                      'OSC_AM','Mod1.amp'
-                      'OSC_PM','Mod1.phase'};
+                    %  mirrors  drives driveType
+    mirrDrivePairs = {'MX',    'MX',   1
+                      'MY',    'MY',   1
+                      'BS',    'BS',   1
+                      'AM',    'AM',   1
+                      'PM',    'PM',   1
+                      'OSC_AM','Mod1', 'amp'
+                      'OSC_PM','Mod1', 'phase'};
                   
 	% now we can use this to create our matrix.
     
@@ -95,9 +95,8 @@ function cucumber = exampleMICHcucumber(opt)
     mirrNames = mirrDrivePairs(:,1).';   
     
     for jMirr = 1:Nmirr
-        mirrname_withdrive = stringSplit('.',mirrDrivePairs{jMirr,2}); %hack to allow modulator second inputs
                   %drive index, mirror index = 1
-        mirrDrive(getDriveNum(opt, mirrname_withdrive{:}),jMirr) = 1; %#ok<SPRIX>
+        mirrDrive(getDriveNum(opt, mirrDrivePairs{jMirr,2}, mirrDrivePairs{jMirr,3}), jMirr) = 1; %#ok<SPRIX>
     end
                         
     
