@@ -2,6 +2,8 @@ function cucumber = exampleMICHcucumber(opt)
     % returns a simple cucmber control system structure for the michelson
     % example for lentickle
     %
+    % Input: Optickle opt object from lentickle MICH opt example.
+    %
     % Some ASCII art
     %
     % Lentickle expects a control system made like this one:
@@ -99,13 +101,75 @@ function cucumber = exampleMICHcucumber(opt)
         mirrDrive(getDriveNum(opt, mirrDrivePairs{jMirr,2}, mirrDrivePairs{jMirr,3}), jMirr) = 1; %#ok<SPRIX>
     end
                         
+    %% Control System Model
+    % what we've done so far is just to reduce the number of inputs and
+    % outputs to/from the Optickle model to make everything more resonable.
+    % Now it's time to actually build the control system model.
+    
+    %% Input Matrix (sensDof)
+    % we will just construct the input matrix we want. For out michelson,
+    % let's just define a simple control system of two degrees of freedom,
+    % the common mode arm mirror motion, COMM, and the differential mode,
+    % DIFF. The ordering of the rows and columns are important, the first
+    % sensor definded in probeSens is the fist sensor here.
+    
+              % REFLI REFLQ ASI ASQ ASDC
+    sensDof = [     1     0   0   0    0   % COMM
+                    0     0   0   1    0]; % DIFF
+    
+	% Now that we've defined our DOFs, let's store the names we will use to
+	% refer to them.
+    
+    dofNames = { 'COMM', 'DIFF'};
+    
+    %% Control Filters (ctrlFilt)
+    % These are the feedback filters.
+    
+               % COMM                DIFF
+    ctrlFilt = [ filtZPK([],[20],1), filtZPK([],50,1)];
+    
+    % here we should also store the desired UGF of the loops
+                % COMM DIFF
+    setUgfDof = [  485  150 ];
+    
+    %% Output Matrix (dofMirr)
+    % remember, order matters.
+    
+              % COMM DIFF
+    dofMirr = [    1    1   % MX
+                   1   -1   % MY
+                   0    0   % BS
+                   0    0   % AM
+                   0    0   % PM
+                   0    0   % OSC AM
+                   0    0]; % OSC PM
+               
+    %% Pendulum compensation (mirrFilt)
+    % We'll just do something really dumb for pendulum compensation: 2
+    % zeros at 1Hz and a few poles at 1kHz.
+    
+    unityFilt = filtZPK([],[],1); % just a flat TF for non-mirrors
+    compFilt = filtZPK([1,1],[1000,1000,1000],1);
+    
+               % MX       MY       BS       AM        PM        OSCAM     OSCPM
+    mirrFilt = [ compFilt compFilt compFilt unityFilt unityFilt unityFilt unityFilt ];
+    
+    %% Mechanical Response (pendFilt)
+    % The mechanical response of the mirrors is defined in the Optickle
+    % Model, we should be able to just get the filters from there.
     
     
     
-    
-    %% Store all the needed arrays in the cucumber
+    %% Store all the needed variables in the cucumber
+    cucumber.opt       = opt;
     cucumber.probeSens = probeSens;
     cucumber.sensNames = sensNames;
     cucumber.mirrDrive = mirrDrive;
     cucumber.mirrNames = mirrNames;
+    cucumber.sensDof   = sensDof;
+    cucumber.dofNames  = dofNames;
+    cucumber.ctrlFilt  = ctrlFilt;
+    cucumber.setUgfDof = setUgfDof;
+    cucumber.dofMirr   = dofMirr;
+    cucumber.mirrFilt  = mirrFilt;
 end
