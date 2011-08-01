@@ -1,7 +1,7 @@
-function cucumber = exampleMICHcucumber()
+function cucumber = exampleMICHcucumber(opt)
     % returns a simple cucmber control system structure for the michelson
     % example for lentickle
-    
+    %
     % Some ASCII art
     %
     % Lentickle expects a control system made like this one:
@@ -34,6 +34,26 @@ function cucumber = exampleMICHcucumber()
     % inside some cavity for diagnostics, but it will never be part of your
     % control system, so there will be no corresponding 'sensor' for that
     % 'probe.')
+    %
+    % Normally the overal (open loop) gain of a given degree of freedom
+    % would be set simply by the product of the gains around the
+    % loop, at times it may be desirable to just choose the unity gain
+    % frequency of the loop, this is done using the setUgfDof array. It is
+    % a 1xNdof array with the UGF of the nth loop. If you want to ignore a
+    % DOF, you can put in NaN and it will just keep the raw loop gain.
+    %
+    % There are also several arrays for storing the names of mirrors,
+    % sensors and dofs.
     
-    % setUgfDof
+    %% First Create probeSens
+    
+    % Our opt model has opt.Nprobe probes, and we will choose just 5
+    % sensors. These will be AS and REFL at RF (I and Q) as well as AS at
+    % DC.
+    %
+    % probeSens is the matrix that translates the probes into the sensors.
+    % Let's just make a temporary variable which shows how probes become
+    % sensors, 
+    
+    
 end
