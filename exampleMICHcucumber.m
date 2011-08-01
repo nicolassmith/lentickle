@@ -49,14 +49,64 @@ function cucumber = exampleMICHcucumber(opt)
     
     % Our opt model has opt.Nprobe probes, and we will choose just 5
     % sensors. These will be AS and REFL at RF (I and Q) as well as AS at
-    % DC. So probeSens will be a ?5xNprobe? matrix.
+    % DC. So probeSens will be a 5xNprobe matrix.
     %
     % probeSens is the matrix that translates the probes into the sensors.
     % Let's just make a temporary variable which shows how probes become
     % sensors.
     
-    %transProbeSens = { ASI, ASI
+                    %  probes     sensors
+    probeSensPairs = {'REFL I1', 'REFL_I'
+                      'REFL Q1', 'REFL_Q'
+                      'AS I1',   'AS_I'
+                      'AS Q1',   'AS_Q'
+                      'AS DC',   'AS_DC'};
+                  
+	% now we can use this to create our matrix.
+    
+    Nsens = size(probeSensPairs,1);
+    probeSens = sparse(Nsens,opt.Nprobe);
+    
+    for jSens = 1:Nsens
+                  %sensor index, probe index = 1
+        probeSens(jSens,getProbeNum(opt,probeSensPairs{jSens,1})) = 1; %#ok<SPRIX>
+    end
+                        
+    % We will also need the list of sensor names
+    
+    sensNames = probeSensPairs(:,2).';
+    
+    %% The other boring matrix is mirrDrive
+    
+                     %  mirrors     drives
+    mirrDrivePairs = {'MX',    'MX'
+                      'MY',    'MY'
+                      'BS',    'BS'
+                      'AM',    'AM'
+                      'PM',    'PM'
+                      'OSC_AM','Mod1.amp'
+                      'OSC_PM','Mod1.phase'};
+                  
+	% now we can use this to create our matrix.
+    
+    Nmirr = size(mirrDrivePairs,1);
+    mirrDrive = sparse(opt.Ndrive,Nmirr);
+    
+    mirrNames = mirrDrivePairs(:,1).';   
+    
+    for jMirr = 1:Nmirr
+        mirrname_withdrive = stringSplit('.',mirrDrivePairs{jMirr,2}); %hack to allow modulator second inputs
+                  %drive index, mirror index = 1
+        mirrDrive(getDriveNum(opt, mirrname_withdrive{:}),jMirr) = 1; %#ok<SPRIX>
+    end
                         
     
     
+    
+    
+    %% Store all the needed arrays in the cucumber
+    cucumber.probeSens = probeSens;
+    cucumber.sensNames = sensNames;
+    cucumber.mirrDrive = mirrDrive;
+    cucumber.mirrNames = mirrNames;
 end
