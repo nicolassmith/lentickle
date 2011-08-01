@@ -4,7 +4,8 @@ function cucumber = exampleMICHcucumber(opt)
     %
     % Input: Optickle opt object from lentickle MICH opt example.
     %
-    % Some ASCII art
+    % Here we will describe the 'cucumber,' which is a structure variable
+    % containing the model of the control system.
     %
     % Lentickle expects a control system made like this one:
     %
@@ -156,7 +157,19 @@ function cucumber = exampleMICHcucumber(opt)
     
     %% Mechanical Response (pendFilt)
     % The mechanical response of the mirrors is defined in the Optickle
-    % Model, we should be able to just get the filters from there.
+    % Model, we should be able to just get the filters from there. Optickle
+    % stores them as zpk objects, we need to convert them to mf (matt
+    % filter) objects.
+    %
+    % There are cases where the optical mechanical response will not be the
+    % same as the actuator mechanical response. In that case, you'll want
+    % to create these filters manually, rather than taking from the
+    % Optickle model.
+    
+    for jMirr = 1:Nmirr
+        optic = getOptic(opt,mirrDrivePairs(jMirr,2));
+        pendFilt(jMirr) = zpk2mf(optic.mechTF); %#ok<AGROW>
+    end
     
     
     
@@ -172,4 +185,5 @@ function cucumber = exampleMICHcucumber(opt)
     cucumber.setUgfDof = setUgfDof;
     cucumber.dofMirr   = dofMirr;
     cucumber.mirrFilt  = mirrFilt;
+    cucumber.pendFilt  = pendFilt;
 end
