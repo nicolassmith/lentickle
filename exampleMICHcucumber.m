@@ -127,7 +127,7 @@ function cucumber = exampleMICHcucumber(opt)
     % These are the feedback filters.
     
                % COMM                DIFF
-    ctrlFilt = [ filtZPK([],[20],1), filtZPK([],50,1)];
+    ctrlFilt = [ filtZPK([],20,1), filtZPK([],50,1)];
     
     % here we should also store the desired UGF of the loops
                 % COMM DIFF
@@ -168,7 +168,12 @@ function cucumber = exampleMICHcucumber(opt)
     
     for jMirr = 1:Nmirr
         optic = getOptic(opt,mirrDrivePairs(jMirr,2));
-        pendFilt(jMirr) = zpk2mf(optic.mechTF); %#ok<AGROW>
+        if numel(optic.mechTF) ~= 0
+            pendFilt(jMirr) = zpk2mf(optic.mechTF); %#ok<AGROW>
+        else
+            % mechTF isn't set, so put in the indentity TF.
+            pendFilt(jMirr) = unityFilt; %#ok<AGROW>
+        end
     end
     
     
