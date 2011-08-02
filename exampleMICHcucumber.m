@@ -1,4 +1,4 @@
-function cucumber = exampleMICHcucumber(opt)
+function cucumber = exampleMICHcucumber(opt,pos)
     % returns a simple cucmber control system structure for the michelson
     % example for lentickle
     %
@@ -47,6 +47,10 @@ function cucumber = exampleMICHcucumber(opt)
     %
     % There are also several arrays for storing the names of mirrors,
     % sensors and dofs.
+    
+    if nargin<2
+        pos = [];
+    end
     
     %% First Create probeSens
     % Our opt model has opt.Nprobe probes, and we will choose just 5
@@ -210,7 +214,7 @@ function cucumber = exampleMICHcucumber(opt)
                         'DOF',   'COMM');
 	
 	f0 = 150; %choose a frequency (Hz) at which to do the maximization
-                    
-    cucumber = lenticklePhase(cucumber,[],f0,phaseAS,phaseREFL); % this changes the opt inside cucumber
+    
+    cucumber = lenticklePhase(cucumber,pos,f0,phaseAS,phaseREFL); % this changes the opt inside cucumber
     
 end
