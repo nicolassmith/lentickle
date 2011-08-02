@@ -8,6 +8,6 @@ function mf = zpk2mf(zpk)
 
     [z,p,k] = zpkdata(zpk);
     
-    mf = struct('z', z{1}/(2*pi), 'p', p{1}/(2*pi), 'k', k);
+    mf = struct('z', -z{1}/(2*pi), 'p', -p{1}/(2*pi), 'k', k);
 
 end
