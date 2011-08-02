@@ -13,7 +13,7 @@ function opt = exampleMICHopt()
     
     % arm lenths
     Lavg = 10; %average arm lenth
-    Lschnupp = 0.25; %schnupp assymetry
+    Lschnupp = 0.2; %schnupp assymetry
     
     
     %% create an opt object
