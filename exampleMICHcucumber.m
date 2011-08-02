@@ -49,7 +49,6 @@ function cucumber = exampleMICHcucumber(opt)
     % sensors and dofs.
     
     %% First Create probeSens
-    
     % Our opt model has opt.Nprobe probes, and we will choose just 5
     % sensors. These will be AS and REFL at RF (I and Q) as well as AS at
     % DC. So probeSens will be a 5xNprobe matrix.
@@ -176,8 +175,6 @@ function cucumber = exampleMICHcucumber(opt)
         end
     end
     
-    
-    
     %% Store all the needed variables in the cucumber
     cucumber.opt       = opt;
     cucumber.probeSens = probeSens;
@@ -191,4 +188,29 @@ function cucumber = exampleMICHcucumber(opt)
     cucumber.dofMirr   = dofMirr;
     cucumber.mirrFilt  = mirrFilt;
     cucumber.pendFilt  = pendFilt;
+    
+    %% Choosing RF demod phases
+    % One step we skipped when making the Optickle model was choosing the
+    % demod phases of our RF sensors. Because Lentickle knows something
+    % about the control system, we can use it to modify the Optickle model
+    % to make certain sensors have maximum response to certain degrees of
+    % freedom. (Example, you want DARM to be mostly coupled to AS_Q not
+    % AS_I.)
+    
+    % Let's prepare the arguments for the phasing function.
+    
+    phaseAS = struct( 'Iname', 'AS_I', ... % name of the I sensor
+                      'Qname', 'AS_Q', ... % name of the Q sensor
+                      'IorQ',  'Q',    ... % maximize I or Q?
+                      'DOF',   'DIFF');    % maximize which DOF?
+
+    phaseREFL = struct( 'Iname', 'REFL_I', ...
+                        'Qname', 'REFL_Q', ...
+                        'IorQ',  'I',      ...
+                        'DOF',   'COMM');
+	
+	f0 = 150; %choose a frequency (Hz) at which to do the maximization
+                    
+    cucumber = lenticklePhase(cucumber,[],f0,phaseAS,phaseREFL); % this changes the opt inside cucumber
+    
 end
