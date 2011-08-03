@@ -130,12 +130,12 @@ function cucumber = exampleMICHcucumber(opt,pos)
     %% Control Filters (ctrlFilt)
     % These are the feedback filters.
     
-               % COMM                DIFF
-    ctrlFilt = [ filtZPK([],20,1), filtZPK([],50,1)];
+               % COMM                    DIFF
+    ctrlFilt = [ filtZPK([200],[0,0],1), filtZPK([70],[0,0],1)]; %#ok<*NBRAK>
     
     % here we should also store the desired UGF of the loops
                 % COMM DIFF
-    setUgfDof = [  485  150 ];
+    setUgfDof = [  500  300 ];
     
     %% Output Matrix (dofMirr)
     % remember, order matters.
@@ -152,10 +152,10 @@ function cucumber = exampleMICHcucumber(opt,pos)
                
     %% Pendulum compensation (mirrFilt)
     % We'll just do something really dumb for pendulum compensation: 2
-    % zeros at 1Hz and a few poles at 1kHz.
+    % zeros at 1Hz and a few poles at 5kHz.
     
     unityFilt = filtZPK([],[],1); % just a flat TF for non-mirrors
-    compFilt = filtZPK([1,1],[1000,1000,1000],1); % dumb compensation
+    compFilt = filtZPK([1,1],[5000,5000,5000],1); % dumb compensation
     
                % MX       MY       BS       PR       AM        PM        OSCAM     OSCPM
     mirrFilt = [ compFilt compFilt compFilt compFilt unityFilt unityFilt unityFilt unityFilt ];

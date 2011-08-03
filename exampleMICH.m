@@ -5,7 +5,7 @@ setupLentickle;
 
 opt = exampleMICHopt();
 cucumber = exampleMICHcucumber(opt);
-f = logspace(-1,4,5000).';
+f = logspace(0,4,500).';
 
 results = lentickleEngine(cucumber,[],f);
 
