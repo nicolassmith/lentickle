@@ -161,13 +161,13 @@ function cucumber = exampleMICHcucumber(opt,pos)
     %% Mechanical Response (pendFilt)
     % The mechanical response of the mirrors is defined in the Optickle
     % Model, we should be able to just get the filters from there. Optickle
-    % stores them as zpk objects, we need to convert them to mf (matt
+    % stores them as zpk objects, we need to convert them to mf (mevans
     % filter) objects.
     %
-    % There are cases where the optical mechanical response will not be the
-    % same as the actuator mechanical response. In that case, you'll want
-    % to create these filters manually, rather than taking from the
-    % Optickle model.
+    % There may be cases where the optical mechanical response will not be
+    % the same as the actuator mechanical response. In that case, you'll
+    % want to create these filters manually, rather than taking them from
+    % the Optickle model.
     
     for jMirr = 1:Nmirr
         optic = getOptic(opt,mirrDrivePairs(jMirr,2));
