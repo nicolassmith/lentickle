@@ -1,6 +1,6 @@
 function cucumber = exampleMICHcucumber(opt,pos)
-    % returns a simple cucmber control system structure for the michelson
-    % example for lentickle
+    % returns a simple cucmber control system structure for the power
+    % recycled michelson example for lentickle
     %
     % Input: Optickle opt object from lentickle MICH opt example.
     %
@@ -88,6 +88,7 @@ function cucumber = exampleMICHcucumber(opt,pos)
     mirrDrivePairs = {'MX',    'MX',   1
                       'MY',    'MY',   1
                       'BS',    'BS',   1
+                      'PR',    'PR',   1
                       'AM',    'AM',   1
                       'PM',    'PM',   1
                       'OSC_AM','Mod1', 'amp'
@@ -143,6 +144,7 @@ function cucumber = exampleMICHcucumber(opt,pos)
     dofMirr = [    1    1   % MX
                    1   -1   % MY
                    0    0   % BS
+                   0    0   % PR
                    0    0   % AM
                    0    0   % PM
                    0    0   % OSC AM
@@ -155,8 +157,8 @@ function cucumber = exampleMICHcucumber(opt,pos)
     unityFilt = filtZPK([],[],1); % just a flat TF for non-mirrors
     compFilt = filtZPK([1,1],[1000,1000,1000],1); % dumb compensation
     
-               % MX       MY       BS       AM        PM        OSCAM     OSCPM
-    mirrFilt = [ compFilt compFilt compFilt unityFilt unityFilt unityFilt unityFilt ];
+               % MX       MY       BS       PR       AM        PM        OSCAM     OSCPM
+    mirrFilt = [ compFilt compFilt compFilt compFilt unityFilt unityFilt unityFilt unityFilt ];
     
     %% Mechanical Response (pendFilt)
     % The mechanical response of the mirrors is defined in the Optickle

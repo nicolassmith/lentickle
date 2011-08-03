@@ -1,6 +1,6 @@
 function opt = exampleMICHopt()
-    % returns a simple RF michelson opt model, for use with the lentickle
-    % example.
+    % returns a simple RF power recycled michelson opt model, for use with
+    % the lentickle example.
 
     
     %% Define Parameters
@@ -11,7 +11,10 @@ function opt = exampleMICHopt()
     pendOmega = 2*pi*1.2; % pendulum angular frequency (rad/s)
     mass = 10; % optic mass (kg)
     
+    Tpr = .03;
+    
     % arm lenths
+    Lprbs = 1;
     Lavg = 10; %average arm lenth
     Lschnupp = 0.2; %schnupp assymetry
     
@@ -38,12 +41,13 @@ function opt = exampleMICHopt()
     
     % lets make some optics
     
-    % BS
-    opt = addBeamSplitter(opt, 'BS', 45, 0 , 0.5);
+    % PR and BS
+    opt = addMirror(      opt, 'PR',  0, 0, Tpr, 0);
+    opt = addBeamSplitter(opt, 'BS', 45, 0, 0.5);
     
     % X and Y mirrors
-    opt = addMirror(opt, 'MX', 0, 1e-6, 0);
-    opt = addMirror(opt, 'MY', 0, 1e-6, lossY);
+    opt = addMirror(opt, 'MX', 0, 0, 1e-6, 0);
+    opt = addMirror(opt, 'MY', 0, 0, 1e-6, lossY);
     
     % mechanical response
     dampRes = [0.01 + 1i, 0.01 - 1i];
@@ -52,7 +56,9 @@ function opt = exampleMICHopt()
     opt = setMechTF(opt, 'BS', zpk([], -pendOmega * dampRes, 1 / mass));
     
     % connect them up
-    opt = addLink(opt, 'Mod1', 'out', 'BS', 'frA', 1);
+    opt = addLink(opt, 'Mod1', 'out', 'PR', 'bk', 1);
+    opt = addLink(opt, 'PR', 'fr', 'BS', 'frA', Lprbs);
+    opt = addLink(opt, 'BS', 'frB', 'PR', 'fr', Lprbs);
     opt = addLink(opt, 'BS', 'frA', 'MY', 'fr', Lavg-Lschnupp/2);
     opt = addLink(opt, 'BS', 'bkA', 'MX', 'fr', Lavg+Lschnupp/2);
     opt = addLink(opt, 'MY', 'fr', 'BS', 'frB', Lavg-Lschnupp/2);
@@ -67,7 +73,7 @@ function opt = exampleMICHopt()
     
     
     % final links
-    opt = addLink(opt, 'BS', 'frB', 'REFLport', 'in', 1);
+    opt = addLink(opt, 'PR', 'bk', 'REFLport', 'in', 1);
     opt = addLink(opt, 'BS', 'bkB', 'ASport', 'in', 1);
     opt = addLink(opt, 'MX', 'bk', 'TRXport', 'in', 1);
     opt = addLink(opt, 'MY', 'bk', 'TRYport', 'in', 1);
