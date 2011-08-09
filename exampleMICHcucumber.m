@@ -135,7 +135,7 @@ function cucumber = exampleMICHcucumber(opt,pos)
     
     % here we should also store the desired UGF of the loops
                 % COMM DIFF
-    setUgfDof = [  500  300 ];
+    setUgfDof = [ 500  300 ];
     
     %% Output Matrix (dofMirr)
     % remember, order matters.
