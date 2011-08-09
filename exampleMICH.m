@@ -27,8 +27,8 @@ hold on
 zplotlog(f,COMM_OLG,'r')
 legend('DIFF','COMM')
 
-DIFF2ASQ = pickleTF(results,'DIFF','AS_Q','cl');
-DIFF2ASI = pickleTF(results,'DIFF','AS_I','cl');
+DIFF2ASQ = pickleTF(results,'DIFF_ctrl','AS_Q','ol');
+DIFF2ASI = pickleTF(results,'DIFF_ctrl','AS_I','ol');
 
 figure(2)
 clf
@@ -39,8 +39,8 @@ hold on
 zplotlog(f,DIFF2ASI,'r')
 legend('ASQ','ASI')
 
-COMM2REFLQ = pickleTF(results,'COMM','REFL_Q','cl');
-COMM2REFLI = pickleTF(results,'COMM','REFL_I','cl');
+COMM2REFLQ = pickleTF(results,'COMM_ctrl','REFL_Q','ol');
+COMM2REFLI = pickleTF(results,'COMM_ctrl','REFL_I','ol');
 
 figure(3)
 clf
@@ -50,3 +50,8 @@ subplot(2,1,2)
 hold on
 zplotlog(f,COMM2REFLI,'r')
 legend('REFLQ','REFLI')
+
+% measurements to display
+% Loop gain TFs
+% laser noise common mode rejection
+% something else?
