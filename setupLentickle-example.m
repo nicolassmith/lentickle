@@ -1,14 +1,14 @@
 % sets up environment for lentickle
 
 % set up path
-addpath(genpath('~/ligo/sim/Optickle'));
-addpath(genpath('mattlib'));
-%addpath(genpath('pickleCode'));
 
-% also my useful matlab scripts, available here:
-% git clone git://github.com/nicolassmith/nicmatlabscripts.git
-% or
-% https://github.com/nicolassmith/nicmatlabscripts/zipball/master
-%
+OpticklePath =  '~/ligo/sim/Optickle'; % edit these lines for your system
+lenticklePath = '~/ligo/sim/lentickle';
 
-%addpath('pathto/nicmatlabscripts')
+% no need to change lines below here
+addpath(OpticklePath);
+addpath([OpticklePath '/lib'])
+addpath(lenticklepath);
+addpath([lenticklePath '/mf']);
+
+
