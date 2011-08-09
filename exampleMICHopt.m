@@ -1,6 +1,9 @@
 function opt = exampleMICHopt()
     % returns a simple RF power recycled michelson opt model, for use with
     % the lentickle example.
+    %
+    % The help for this file is a bit skimpy, there are other good
+    % resources to learn how to use optickle.
 
     
     %% Define Parameters
@@ -11,13 +14,16 @@ function opt = exampleMICHopt()
     pendOmega = 2*pi*1.2; % pendulum angular frequency (rad/s)
     mass = 10; % optic mass (kg)
     
-    Tpr = .03;
+    Tpr = .03; % PR transmission
     
-    % arm lenths
-    Lprbs = 1;
-    Lavg = 10; %average arm lenth
-    Lschnupp = 0.2; %schnupp assymetry
+    c = 299792458; % speed of light (m/s)
     
+    % arm lengths
+    
+    Lprc = c/(2*fMod); % make PRC length so sidebands resonante 
+    Lprbs = 1; % distance from PR to BS
+    Lavg = Lprc-Lprbs; % average arm length
+    Lschnupp = c/(4*pi*fMod) * asin(sqrt(Tpr)); % make schnupp assymetry so sidebands are critically coupled
     
     %% create an opt object
     % we will make a simple RF michelson
@@ -70,7 +76,6 @@ function opt = exampleMICHopt()
     opt = addSink(opt, 'ASport');
     opt = addSink(opt, 'TRXport');
     opt = addSink(opt, 'TRYport');
-    
     
     % final links
     opt = addLink(opt, 'PR', 'bk', 'REFLport', 'in', 1);
