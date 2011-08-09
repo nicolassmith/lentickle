@@ -4,7 +4,7 @@
 % nameIn and nameOut can be any of the following strings:
 % sens, err, ctrl, corr, mirr
 
-function mTF = pickleTF(rslt, nameFrom, nameTo, varargin)
+function mTF = pickleTF(rslt, nameFrom, nameTo, olcl)
 
   names = rslt.testPoints;
   namesUpper = rslt.testPointsUpper;
@@ -141,15 +141,16 @@ function mTF = pickleTF(rslt, nameFrom, nameTo, varargin)
 	error('Internal read out problem.')
     end
   end
-    
-  if numel(varargin) && strcmpi(varargin{1},'cl')
-      clTF = rslt.([nameFrom 'CL']);
-
-      mTF = getProdTF(mTF, clTF);
-  end
   
   % now we squeeze if we were asking for single channels
   if ~isempty(singTo) && ~isempty(singFrom)
+      
+      if nargin<4 || ~strcmpi(olcl,'ol')
+          clTF = rslt.([nameFrom 'CL']);
+
+          mTF = getProdTF(mTF, clTF); 
+      end
+      
       mTF = squeeze(mTF(singTo,singFrom,:));
   end
 end
