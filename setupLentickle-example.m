@@ -8,7 +8,7 @@ lenticklePath = '~/ligo/sim/lentickle';
 % no need to change lines below here
 addpath(OpticklePath);
 addpath([OpticklePath '/lib'])
-addpath(lenticklepath);
+addpath(lenticklePath);
 addpath([lenticklePath '/mf']);
 
 

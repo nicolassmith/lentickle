@@ -1,7 +1,7 @@
 % script to calculate loop gains and noise transfer functions for the MICH
 % example.
 
-setupLentickle;
+run ../setupLentickle;
 
 opt = exampleMICHopt();
 cucumber = exampleMICHcucumber(opt);

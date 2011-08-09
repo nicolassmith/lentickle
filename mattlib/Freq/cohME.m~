@@ -1,8 +1,0 @@
-% [coh, f] = cohME(x, y, fs, dt)
-
-function [coh, f] = cohME(x, y, fs, dt)
-
-  % compute transfer function
-  Nfft = 2^ceil(log2(dt * fs));
-  w = hann(Nfft);
-  [coh, f] = mscohere(x, y, w, [], [], fs);
