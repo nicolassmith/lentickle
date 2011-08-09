@@ -1,7 +1,16 @@
-% result = lentickleEngine(pickle, pos, f, sigAC, mMech)
+% result = lentickleEngine(cucumber, pos, f, sigAC, mMech)
 %   generate pickle result matrices, TFs, etc.
 %   sigAC and mMech will be generated if not given as arguments
 %
+% Syntax: result lentickleEngine(cucumber, pos, f, sigAC, mMech)
+%
+% cucmber - lentickle control system model (cucumber)
+% pos     - array of drive offsets (passed directly to tickle)
+% f       - frequency array
+% sigAC   - 3D drive->probe matrix, output of tickle (optional)
+% mMech   - tickle mechanical response modification matrix (optional)
+%
+% result  - result structure containing closed loop matricies
 
 function rslt = lentickleEngine(lentickle, pos, f, sigAC, mMech)
   
