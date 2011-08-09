@@ -215,7 +215,7 @@ function cucumber = exampleMICHcucumber(opt,pos)
                         'IorQ',  'I',      ...
                         'DOF',   'COMM');
 	
-	f0 = 150; %choose a frequency (Hz) at which to do the maximization
+    f0 = 150; %choose a frequency (Hz) at which to do the maximization
     
     cucumber = lenticklePhase(cucumber,pos,f0,phaseAS,phaseREFL); % this changes the opt inside cucumber
     
