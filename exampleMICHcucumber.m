@@ -122,8 +122,8 @@ function cucumber = exampleMICHcucumber(opt,pos)
     sensDof = [     1     0   0   0    0   % COMM
                     0     0   0   1    0]; % DIFF
     
-	% Now that we've defined our DOFs, let's store the names we will use to
-	% refer to them.
+    % Now that we've defined our DOFs, let's store the names we will use to
+    % refer to them.
     
     dofNames = { 'COMM', 'DIFF'};
     
