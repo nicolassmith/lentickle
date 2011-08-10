@@ -69,11 +69,11 @@ ASQcalmeters = pickleTF(results,'MX','AS_Q') - pickleTF(results,'MY','AS_Q'); % 
 REFLIcalmeters = pickleTF(results,'MX','REFL_I') + pickleTF(results,'MY','REFL_I'); % units of [REFL_I counts]/m
 
 % Now we will calculate the coulping of laser frequency noise to AS_Q and
-% REFL_I. The PM 'mirror' is the phase modulator actuator, we multiply by
+% REFL_I. The PM 'mirror' is the phase modulator actuator, we divide by
 % i*f to get frequency.
 
-FMtoASQ = pickleTF(results,'PM','AS_Q') * 1i .* f; % units of [AS_Q counts]/Hz
-FMtoREFLI = pickleTF(results,'PM','REFL_I') * 1i .* f; % units of [REFL_I counts]/Hz
+FMtoASQ = pickleTF(results,'PM','AS_Q') ./ ( 1i * f ); % units of [AS_Q counts]/Hz
+FMtoREFLI = pickleTF(results,'PM','REFL_I') ./ ( 1i * f ); % units of [REFL_I counts]/Hz
 
 % Now we calibrate in terms of meters.
 
