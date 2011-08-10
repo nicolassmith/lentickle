@@ -1,0 +1,230 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Power Recycled Michelson Lentickle Example</title><meta name="generator" content="MATLAB 7.12"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2011-08-10"><meta name="DC.source" content="exampleMICH.m"><style type="text/css">
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows. */ 
+p,h1,h2,div.content div {
+  max-width: 600px;
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head><body><div class="content"><h1>Power Recycled Michelson Lentickle Example</h1><!--introduction--><p>script to calculate loop gains and noise transfer functions for the MICH example.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Set up paths</a></li><li><a href="#2">Interferometer Model</a></li><li><a href="#3">Closed loop results</a></li><li><a href="#4">Transfer functions</a></li><li><a href="#5">Open Loop Gains</a></li><li><a href="#6">Noise Transfer Functions</a></li></ul></div><h2>Set up paths<a name="1"></a></h2><pre class="codeinput">run <span class="string">../setupLentickle</span>;
+</pre><h2>Interferometer Model<a name="2"></a></h2><p>first we will set up our interferometer model, including the optickle plant (handled by Optickle) and the rest of the control system (handled by lentickle). The control system model is stored in the cucumber, click <a href="exampleMICHcucumber.html">here</a> to see a demo of how to create a cucumber.</p><pre class="codeinput">opt = exampleMICHopt(); <span class="comment">% create the opt object</span>
+cucumber = exampleMICHcucumber(opt); <span class="comment">% create the cucumber structure</span>
+                                     <span class="comment">% look at exampleMICHcucumber.m for</span>
+                                     <span class="comment">% more info about the cucumber.</span>
+fHigh = 5000; fLow = 40;
+f = logspace(log10(fLow),log10(fHigh),500).'; <span class="comment">% choose the frequency array we will use</span>
+</pre><h2>Closed loop results<a name="3"></a></h2><p>We will now call the lentickleEngine function to calculate the closed loop transfer functions of the control system. As arguments, it takes the cucumber, a 'pos' array which has offsets of all the Optickle drives (note: these are 'drives' not 'mirrors'), and the frequency array.</p><pre class="codeinput">results = lentickleEngine(cucumber,[],f); <span class="comment">% calculate all results</span>
+</pre><h2>Transfer functions<a name="4"></a></h2><p>All the transfer functions (which include closed loops and all cross coupling effects) can be extracted from the results structure, and the pickleTF function makes that easy.</p><h2>Open Loop Gains<a name="5"></a></h2><p>We will calculate the open loop gains of our two degrees of freedom, the differential and common modes of the arms, 'DIFF' and 'COMM'. pickleTF will easily give us the closed loop gain, and calulating the open loop gain from that is fairly easy. (OLG = 1 - 1./CLG)</p><pre class="codeinput">DIFFOLG = 1 - 1./pickleTF(results,<span class="string">'DIFF'</span>,<span class="string">'DIFF'</span>);
+COMMOLG = 1 - 1./pickleTF(results,<span class="string">'COMM'</span>,<span class="string">'COMM'</span>);
+
+<span class="comment">% make a plot of them</span>
+
+figure(1)
+subplot(2,1,1)
+loglog(f,abs(DIFFOLG),<span class="string">'r'</span>,f,abs(COMMOLG),<span class="string">'b'</span>);
+title(<span class="string">'Open Loop Gain'</span>)
+ylabel(<span class="string">'Magnitude'</span>)
+legend(<span class="string">'DIFF'</span>,<span class="string">'COMM'</span>)
+xlim([fLow fHigh])
+grid <span class="string">on</span>
+subplot(2,1,2)
+semilogx(f,180/pi*angle(DIFFOLG),<span class="string">'r'</span>,f,180/pi*angle(COMMOLG),<span class="string">'b'</span>);
+ylabel(<span class="string">'Phase (degrees)'</span>)
+xlabel(<span class="string">'Frequency (Hz)'</span>)
+xlim([fLow fHigh])
+grid <span class="string">on</span>
+</pre><img vspace="5" hspace="5" src="exampleMICH_01.png" alt=""> <h2>Noise Transfer Functions<a name="6"></a></h2><p>Here we will calculate the transfer function of laser noises to our length sensors, we will calibrate the sensor in terms of meters of the relevant degree of freedom.</p><pre class="codeinput"><span class="comment">% First we will calculate the calibration of AS_Q in DIFF meters, and</span>
+<span class="comment">% REFL_I in COMM meters.</span>
+
+ASQcalmeters = pickleTF(results,<span class="string">'MX'</span>,<span class="string">'AS_Q'</span>) - pickleTF(results,<span class="string">'MY'</span>,<span class="string">'AS_Q'</span>); <span class="comment">% units of [AS_Q counts]/m</span>
+REFLIcalmeters = pickleTF(results,<span class="string">'MX'</span>,<span class="string">'REFL_I'</span>) + pickleTF(results,<span class="string">'MY'</span>,<span class="string">'REFL_I'</span>); <span class="comment">% units of [REFL_I counts]/m</span>
+
+<span class="comment">% Now we will calculate the coulping of laser frequency noise to AS_Q and</span>
+<span class="comment">% REFL_I. The PM 'mirror' is the phase modulator actuator, we multiply by</span>
+<span class="comment">% i*f to get frequency.</span>
+
+FMtoASQ = pickleTF(results,<span class="string">'PM'</span>,<span class="string">'AS_Q'</span>) * 1i .* f; <span class="comment">% units of [AS_Q counts]/Hz</span>
+FMtoREFLI = pickleTF(results,<span class="string">'PM'</span>,<span class="string">'REFL_I'</span>) * 1i .* f; <span class="comment">% units of [REFL_I counts]/Hz</span>
+
+<span class="comment">% Now we calibrate in terms of meters.</span>
+
+FMtoDIFF = FMtoASQ ./ ASQcalmeters; <span class="comment">% units of m/Hz</span>
+FMtoCOMM = FMtoREFLI ./ REFLIcalmeters; <span class="comment">% units of m/Hz</span>
+
+<span class="comment">%plot comparison</span>
+
+figure(2)
+subplot(2,1,1)
+loglog(f,abs(FMtoDIFF),<span class="string">'r'</span>,f,abs(FMtoCOMM),<span class="string">'b'</span>);
+title(<span class="string">'Frequency Noise Coupling'</span>)
+ylabel(<span class="string">'Magnitude (m/Hz)'</span>)
+legend(<span class="string">'DIFF'</span>,<span class="string">'COMM'</span>,<span class="string">'Location'</span>,<span class="string">'SE'</span>)
+xlim([fLow fHigh])
+grid <span class="string">on</span>
+subplot(2,1,2)
+semilogx(f,180/pi*angle(FMtoDIFF),<span class="string">'r'</span>,f,180/pi*angle(FMtoCOMM),<span class="string">'b'</span>);
+ylabel(<span class="string">'Phase (degrees)'</span>)
+xlabel(<span class="string">'Frequency (Hz)'</span>)
+xlim([fLow fHigh])
+grid <span class="string">on</span>
+</pre><img vspace="5" hspace="5" src="exampleMICH_02.png" alt=""> <p>In this plot we can see common mode regection of laser frequency noise!</p><p class="footer"><br>
+      Published with MATLAB&reg; 7.12<br></p></div><!--
+##### SOURCE BEGIN #####
+%% Power Recycled Michelson Lentickle Example
+% script to calculate loop gains and noise transfer functions for the MICH
+% example.
+
+%% Set up paths
+run ../setupLentickle; 
+
+%% Interferometer Model
+% first we will set up our interferometer model, including the optickle
+% plant (handled by Optickle) and the rest of the control system (handled
+% by lentickle). The control system model is stored in the cucumber, click
+% <exampleMICHcucumber.html here> to see a demo of how to create a cucumber.
+
+opt = exampleMICHopt(); % create the opt object
+cucumber = exampleMICHcucumber(opt); % create the cucumber structure
+                                     % look at exampleMICHcucumber.m for
+                                     % more info about the cucumber.
+fHigh = 5000; fLow = 40;
+f = logspace(log10(fLow),log10(fHigh),500).'; % choose the frequency array we will use
+
+%% Closed loop results
+% We will now call the lentickleEngine function to calculate the closed
+% loop transfer functions of the control system. As arguments, it takes the
+% cucumber, a 'pos' array which has offsets of all the Optickle drives
+% (note: these are 'drives' not 'mirrors'), and the frequency array.
+
+results = lentickleEngine(cucumber,[],f); % calculate all results
+
+%% Transfer functions
+% All the transfer functions (which include closed loops and all cross
+% coupling effects) can be extracted from the results structure, and the
+% pickleTF function makes that easy.
+
+%% Open Loop Gains
+% We will calculate the open loop gains of our two degrees of freedom, the
+% differential and common modes of the arms, 'DIFF' and 'COMM'. pickleTF
+% will easily give us the closed loop gain, and calulating the open loop
+% gain from that is fairly easy. (OLG = 1 - 1./CLG)
+
+DIFFOLG = 1 - 1./pickleTF(results,'DIFF','DIFF');
+COMMOLG = 1 - 1./pickleTF(results,'COMM','COMM');
+
+% make a plot of them
+
+figure(1)
+subplot(2,1,1)
+loglog(f,abs(DIFFOLG),'r',f,abs(COMMOLG),'b');
+title('Open Loop Gain')
+ylabel('Magnitude')
+legend('DIFF','COMM')
+xlim([fLow fHigh])
+grid on
+subplot(2,1,2)
+semilogx(f,180/pi*angle(DIFFOLG),'r',f,180/pi*angle(COMMOLG),'b');
+ylabel('Phase (degrees)')
+xlabel('Frequency (Hz)')
+xlim([fLow fHigh])
+grid on
+
+%% Noise Transfer Functions
+% Here we will calculate the transfer function of laser noises to our
+% length sensors, we will calibrate the sensor in terms of meters of the
+% relevant degree of freedom.
+
+% First we will calculate the calibration of AS_Q in DIFF meters, and
+% REFL_I in COMM meters.
+
+ASQcalmeters = pickleTF(results,'MX','AS_Q') - pickleTF(results,'MY','AS_Q'); % units of [AS_Q counts]/m
+REFLIcalmeters = pickleTF(results,'MX','REFL_I') + pickleTF(results,'MY','REFL_I'); % units of [REFL_I counts]/m
+
+% Now we will calculate the coulping of laser frequency noise to AS_Q and
+% REFL_I. The PM 'mirror' is the phase modulator actuator, we multiply by
+% i*f to get frequency.
+
+FMtoASQ = pickleTF(results,'PM','AS_Q') * 1i .* f; % units of [AS_Q counts]/Hz
+FMtoREFLI = pickleTF(results,'PM','REFL_I') * 1i .* f; % units of [REFL_I counts]/Hz
+
+% Now we calibrate in terms of meters.
+
+FMtoDIFF = FMtoASQ ./ ASQcalmeters; % units of m/Hz
+FMtoCOMM = FMtoREFLI ./ REFLIcalmeters; % units of m/Hz
+
+%plot comparison
+
+figure(2)
+subplot(2,1,1)
+loglog(f,abs(FMtoDIFF),'r',f,abs(FMtoCOMM),'b');
+title('Frequency Noise Coupling')
+ylabel('Magnitude (m/Hz)')
+legend('DIFF','COMM','Location','SE')
+xlim([fLow fHigh])
+grid on
+subplot(2,1,2)
+semilogx(f,180/pi*angle(FMtoDIFF),'r',f,180/pi*angle(FMtoCOMM),'b');
+ylabel('Phase (degrees)')
+xlabel('Frequency (Hz)')
+xlim([fLow fHigh])
+grid on
+%%
+% In this plot we can see common mode regection of laser frequency noise!
+##### SOURCE END #####
+--></body></html>

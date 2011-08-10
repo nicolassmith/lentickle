@@ -1,18 +1,21 @@
-function cucumber = exampleMICHcucumber(opt,pos)
-    % returns a simple cucmber control system structure for the power
-    % recycled michelson example for lentickle
-    %
-    % Input: Optickle opt object from lentickle MICH opt example.
-    %
+%% Cucumber control system model for lentickle michelson example
+% returns a simple cucmber control system structure for the power
+% recycled michelson example for lentickle. See the michelson example
+% script <exampleMICH.html here>.
+%
+% Input: Optickle opt object from lentickle MICH opt example.
+%%
+function cucumber = exampleMICHcucumber(opt,pos)    
+    %% Introduction
     % Here we will describe the 'cucumber,' which is a structure variable
     % containing the model of the control system.
     %
     % Lentickle expects a control system made like this one:
     %
-    % ---> sensDof -> ctrlFilt -> dofMirr -> mirrFilt -> pendFilt ---
-    % |                                                             |
-    % |                                                             |
-    % ------ probeSens <- [Optickle Model] <- mirrDrive <------------
+    %   ---> sensDof -> ctrlFilt -> dofMirr -> mirrFilt -> pendFilt ---
+    %   |                                                             |
+    %   |                                                             |
+    %   ------ probeSens <- [Optickle Model] <- mirrDrive <------------
     %
     % All the components that have Filt in the name represent a 1D array of
     % filters. So if you have 4 DOFs, your ctrlFilt is a 1x4 array of
@@ -68,7 +71,7 @@ function cucumber = exampleMICHcucumber(opt,pos)
                       'AS Q1',   'AS_Q'
                       'AS DC',   'AS_DC'};
                   
-	% now we can use this to create our matrix.
+    % now we can use this to create our matrix.
     
     Nsens = size(probeSensPairs,1);
     probeSens = sparse(Nsens,opt.Nprobe);
@@ -94,7 +97,7 @@ function cucumber = exampleMICHcucumber(opt,pos)
                       'OSC_AM','Mod1', 'amp'
                       'OSC_PM','Mod1', 'phase'};
                   
-	% now we can use this to create our matrix.
+    % now we can use this to create our matrix.
     
     Nmirr = size(mirrDrivePairs,1);
     mirrDrive = sparse(opt.Ndrive,Nmirr);
