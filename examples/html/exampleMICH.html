@@ -156,7 +156,7 @@ subplot(2,1,1)
 loglog(f,abs(FMtoDIFF),<span class="string">'r'</span>,f,abs(FMtoCOMM),<span class="string">'b'</span>);
 title(<span class="string">'Frequency Noise Coupling'</span>)
 ylabel(<span class="string">'Magnitude (m/Hz)'</span>)
-legend(<span class="string">'DIFF'</span>,<span class="string">'COMM'</span>,<span class="string">'Location'</span>,<span class="string">'SE'</span>)
+legend(<span class="string">'DIFF'</span>,<span class="string">'COMM'</span>)
 xlim([fLow fHigh])
 grid <span class="string">on</span>
 subplot(2,1,2)
@@ -260,7 +260,7 @@ subplot(2,1,1)
 loglog(f,abs(FMtoDIFF),'r',f,abs(FMtoCOMM),'b');
 title('Frequency Noise Coupling')
 ylabel('Magnitude (m/Hz)')
-legend('DIFF','COMM','Location','SE')
+legend('DIFF','COMM')
 xlim([fLow fHigh])
 grid on
 subplot(2,1,2)

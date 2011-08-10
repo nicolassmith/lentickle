@@ -87,7 +87,7 @@ subplot(2,1,1)
 loglog(f,abs(FMtoDIFF),'r',f,abs(FMtoCOMM),'b');
 title('Frequency Noise Coupling')
 ylabel('Magnitude (m/Hz)')
-legend('DIFF','COMM','Location','SE')
+legend('DIFF','COMM')
 xlim([fLow fHigh])
 grid on
 subplot(2,1,2)
