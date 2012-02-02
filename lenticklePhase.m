@@ -26,9 +26,15 @@ function cucumber = lenticklePhase(cucumber,pos,f0,varargin)
         % translate to PROBE names
         
         sensIndexI = find(strcmp(sensor.Iname,cucumber.sensNames),1);
+        if numel(sensIndexI)<1
+            error(['lenticklePhase Error, no sensor named ' sensor.Iname ' found in the cucumber']);
+        end
         probeIndexI = find(cucumber.probeSens(sensIndexI,:),1);
         
         sensIndexQ = find(strcmp(sensor.Qname,cucumber.sensNames),1);
+        if numel(sensIndexQ)<1
+            error(['lenticklePhase Error, no sensor named ' sensor.Qname ' found in the cucumber']);
+        end
         probeIndexQ = find(cucumber.probeSens(sensIndexQ,:),1);
         
         mIQ{iSensor,1} = getProbeName(opt,probeIndexI); %#ok<*AGROW>
