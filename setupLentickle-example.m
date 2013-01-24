@@ -3,8 +3,8 @@
 
 % set up path
 
-OpticklePath =  '~/ligo/sim/Optickle'; % edit these lines for your system
-lenticklePath = '~/ligo/sim/lentickle';
+OpticklePath =  '~/repos/iscmodeling/Optickle'; % edit these lines for your system
+lenticklePath = '~/repos/lentickle';
 
 % no need to change lines below here
 addpath(OpticklePath);
