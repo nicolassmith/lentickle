@@ -14,7 +14,7 @@
 
 function rslt = lentickleEngine(lentickle, pos, f, sigAC, mMech)
   
-  if(any(strcmp(fieldnames(lentickle),'param')))
+  if isfield(lentickle, 'param')
     pp = lentickle.param;
   else
     pp = lentickle;
@@ -34,6 +34,37 @@ function rslt = lentickleEngine(lentickle, pos, f, sigAC, mMech)
       vMirr(jMirr) = find(pp.mirrDrive(:,jMirr),1);
   end
     
+  % get loop TFs
+  hCtrl = pickleMakeFilt(f, pp.ctrlFilt);
+  hMirr = pickleMakeFilt(f, pp.mirrFilt);
+  hPend = pickleMakeFilt(f, pp.pendFilt);
+  
+  % make DOF subtraction matrix
+  dofMix = repmat(eye(Ndof), [1 1 Nfreq]);
+  if isfield(pp, 'subPath')
+    for n = 1:numel(pp.subPath)
+      % thus subtraction filter has nameFrome, nameTo, filt field
+      sp = pp.subPath(n);
+      
+      % find DOF names
+      nFrom = find(strcmp(sp.nameFrom, pp.dofNames), 1);
+      nTo = find(strcmp(sp.nameTo, pp.dofNames), 1);
+      
+      % check for valid names
+      if isempty(nFrom)
+        error('Subtraction path %d: nameFrom "%s" is not a DOF', ...
+          n, sp.nameFrom)
+      end
+      if isempty(nTo)
+        error('Subtraction path %d: nameTo "%s" is not a DOF', ...
+          n, sp.nameTo)
+      end
+      
+      % fill in the TF
+      dofMix(nTo, nFrom, :) = pickleMakeFilt(f, sp.filt);
+    end
+  end
+  
   % call tickle to compute fields and TFs
   mirrReduce = eye(Ndrive);
   if( nargin < 5 )
@@ -41,12 +72,8 @@ function rslt = lentickleEngine(lentickle, pos, f, sigAC, mMech)
       mirrReduce = mirrReduce(vMirr,:);
   end
   
-  % get loop TFs
-  hCtrl = pickleMakeFilt(f, pp.ctrlFilt);
-  hMirr = pickleMakeFilt(f, pp.mirrFilt);
-  hPend = pickleMakeFilt(f, pp.pendFilt);
-  
   %%%%%%%%%%%%%%%%% initialize result matrices
+  rslt.f = f;
   rslt.Nfreq = Nfreq;
   rslt.Nsens = Nsens;
   rslt.Ndof = Ndof;
@@ -76,7 +103,8 @@ function rslt = lentickleEngine(lentickle, pos, f, sigAC, mMech)
   mirrDrive = pp.mirrDrive;
   
   % if desired, set UGF directly to desired value for each DOF
-  if(any(strcmp(fieldnames(pp),'setUgfDof')))
+  gainCorr = ones(Ndof, 1);
+  if isfield(pp,'setUgfDof')
     setUgfDof = pp.setUgfDof;
     ugfDof = setUgfDof;
 
@@ -85,7 +113,7 @@ function rslt = lentickleEngine(lentickle, pos, f, sigAC, mMech)
           continue
       end
       % find the nearest f index and use that
-      [fDelta,fIndex] = min(abs(f-setUgfDof(m)));
+      [fDelta,fIndex] = min(abs(f - setUgfDof(m)));
       ugfDof(m) = f(fIndex);
       
       % calculate the current gain at that frequency
@@ -94,16 +122,17 @@ function rslt = lentickleEngine(lentickle, pos, f, sigAC, mMech)
             diag(hCtrl(fIndex, :));
       
       dofGain = dofGain(m,m);
-      
-      dofSign = sign(angle(dofGain));
+      dofSign = sign(real(dofGain));
+      gainCorr(m) = abs(dofGain) * dofSign;
       
       % divide out the gain to make it 1 at the desired frequency
-      sensDof(m,:) = pp.sensDof(m,:) / abs(dofGain) * dofSign;
+      sensDof(m,:) = pp.sensDof(m,:) / gainCorr(m);
     end
     
     % store the true UGFs
     rslt.ugfDof = ugfDof;
   end
+  rslt.gainCorr = gainCorr;
   
   eyeSens = eye(Nsens);
   eyeDof = eye(Ndof);
@@ -118,7 +147,7 @@ function rslt = lentickleEngine(lentickle, pos, f, sigAC, mMech)
     
     % make piecewise TFs
     errCtrl = diag(hCtrl(n, :));
-    ctrlCorr = diag(hMirr(n, :)) * dofMirr;
+    ctrlCorr = diag(hMirr(n, :)) * dofMirr * dofMix(:, :, n);
     corrMirr = diag(hPend(n, :));
 
     % make half-loop pairs

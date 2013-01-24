@@ -3,6 +3,11 @@
 %
 % nameIn and nameOut can be any of the following strings:
 % sens, err, ctrl, corr, mirr
+%
+% alternately, both names (to and from) may identify a single
+% channel of interest (e.g., MICH or REFL_I or EX or MICH_ctrl)
+% these names are taken from the lists
+%   rslt.{mirrNames, sensNames, dofNames}
 
 function mTF = pickleTF(rslt, nameFrom, nameTo, olcl)
 
@@ -142,15 +147,14 @@ function mTF = pickleTF(rslt, nameFrom, nameTo, olcl)
     end
   end
   
+  % apply closed-loop TFs?
+  if nargin<4 || ~strcmpi(olcl,'ol')
+    clTF = rslt.([nameFrom 'CL']);
+    mTF = getProdTF(mTF, clTF);
+  end
+      
   % now we squeeze if we were asking for single channels
   if ~isempty(singTo) && ~isempty(singFrom)
-      
-      if nargin<4 || ~strcmpi(olcl,'ol')
-          clTF = rslt.([nameFrom 'CL']);
-
-          mTF = getProdTF(mTF, clTF); 
-      end
-      
       mTF = squeeze(mTF(singTo,singFrom,:));
   end
 end
