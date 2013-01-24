@@ -65,33 +65,33 @@ grid on
 % First we will calculate the calibration of AS_Q in DIFF meters, and
 % REFL_I in COMM meters.
 
-ASQcalmeters = pickleTF(results,'MX','AS_Q') - pickleTF(results,'MY','AS_Q'); % units of [AS_Q counts]/m
-REFLIcalmeters = pickleTF(results,'MX','REFL_I') + pickleTF(results,'MY','REFL_I'); % units of [REFL_I counts]/m
+DIFFcalmeters = pickleTF(results,'MX','DIFF') - pickleTF(results,'MY','DIFF'); % units of [DIFF counts]/m
+COMMcalmeters = pickleTF(results,'MX','COMM') + pickleTF(results,'MY','COMM'); % units of [COMM counts]/m
 
 % Now we will calculate the coulping of laser frequency noise to AS_Q and
 % REFL_I. The PM 'mirror' is the phase modulator actuator, we divide by
 % i*f to get frequency.
 
-FMtoASQ = pickleTF(results,'PM','AS_Q') ./ ( 1i * f ); % units of [AS_Q counts]/Hz
-FMtoREFLI = pickleTF(results,'PM','REFL_I') ./ ( 1i * f ); % units of [REFL_I counts]/Hz
+FMtoDIFF = pickleTF(results,'PM','DIFF') ./ ( 1i * f ); % units of [DIFF counts]/Hz
+FMtoCOMM = pickleTF(results,'PM','COMM') ./ ( 1i * f ); % units of [COMM counts]/Hz
 
 % Now we calibrate in terms of meters.
 
-FMtoDIFF = FMtoASQ ./ ASQcalmeters; % units of m/Hz
-FMtoCOMM = FMtoREFLI ./ REFLIcalmeters; % units of m/Hz
+FMtoDIFFcal = FMtoDIFF ./ DIFFcalmeters; % units of m/Hz
+FMtoCOMMcal = FMtoCOMM ./ COMMcalmeters; % units of m/Hz
 
 %plot comparison
 
 figure(2)
 subplot(2,1,1)
-loglog(f,abs(FMtoDIFF),'r',f,abs(FMtoCOMM),'b');
+loglog(f,abs(FMtoDIFFcal),'r',f,abs(FMtoCOMMcal),'b');
 title('Frequency Noise Coupling')
 ylabel('Magnitude (m/Hz)')
 legend('DIFF','COMM')
 xlim([fLow fHigh])
 grid on
 subplot(2,1,2)
-semilogx(f,180/pi*angle(FMtoDIFF),'r',f,180/pi*angle(FMtoCOMM),'b');
+semilogx(f,180/pi*angle(FMtoDIFFcal),'r',f,180/pi*angle(FMtoCOMMcal),'b');
 ylabel('Phase (degrees)')
 xlabel('Frequency (Hz)')
 xlim([fLow fHigh])
