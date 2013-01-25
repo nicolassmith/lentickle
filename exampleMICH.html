@@ -4,69 +4,57 @@
 <html>
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      -->
-      <title>Power Recycled Michelson Lentickle Example</title>
-      <meta name="generator" content="MATLAB 7.8">
-      <meta name="date" content="2011-08-10">
-      <meta name="m-file" content="exampleMICH"><style type="text/css">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Power Recycled Michelson Lentickle Example</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-01-24"><meta name="DC.source" content="exampleMICH.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
-body {
-  background-color: white;
-  margin:10px;
-}
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
 
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
 
-h2 {
-  color: #990000;
-  font-size: medium;
-}
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
 
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
 
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
 
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
 
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
 
-pre.error {
-  color: red;
-}
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
 
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
 
   </style></head>
    <body>
@@ -134,42 +122,39 @@ grid <span class="string">on</span>
          </p><pre class="codeinput"><span class="comment">% First we will calculate the calibration of AS_Q in DIFF meters, and</span>
 <span class="comment">% REFL_I in COMM meters.</span>
 
-ASQcalmeters = pickleTF(results,<span class="string">'MX'</span>,<span class="string">'AS_Q'</span>) - pickleTF(results,<span class="string">'MY'</span>,<span class="string">'AS_Q'</span>); <span class="comment">% units of [AS_Q counts]/m</span>
-REFLIcalmeters = pickleTF(results,<span class="string">'MX'</span>,<span class="string">'REFL_I'</span>) + pickleTF(results,<span class="string">'MY'</span>,<span class="string">'REFL_I'</span>); <span class="comment">% units of [REFL_I counts]/m</span>
+DIFFcalmeters = pickleTF(results,<span class="string">'MX'</span>,<span class="string">'DIFF'</span>) - pickleTF(results,<span class="string">'MY'</span>,<span class="string">'DIFF'</span>); <span class="comment">% units of [DIFF counts]/m</span>
+COMMcalmeters = pickleTF(results,<span class="string">'MX'</span>,<span class="string">'COMM'</span>) + pickleTF(results,<span class="string">'MY'</span>,<span class="string">'COMM'</span>); <span class="comment">% units of [COMM counts]/m</span>
 
 <span class="comment">% Now we will calculate the coulping of laser frequency noise to AS_Q and</span>
 <span class="comment">% REFL_I. The PM 'mirror' is the phase modulator actuator, we divide by</span>
 <span class="comment">% i*f to get frequency.</span>
 
-FMtoASQ = pickleTF(results,<span class="string">'PM'</span>,<span class="string">'AS_Q'</span>) ./ ( 1i * f ); <span class="comment">% units of [AS_Q counts]/Hz</span>
-FMtoREFLI = pickleTF(results,<span class="string">'PM'</span>,<span class="string">'REFL_I'</span>) ./ ( 1i * f ); <span class="comment">% units of [REFL_I counts]/Hz</span>
+FMtoDIFF = pickleTF(results,<span class="string">'PM'</span>,<span class="string">'DIFF'</span>) ./ ( 1i * f ); <span class="comment">% units of [DIFF counts]/Hz</span>
+FMtoCOMM = pickleTF(results,<span class="string">'PM'</span>,<span class="string">'COMM'</span>) ./ ( 1i * f ); <span class="comment">% units of [COMM counts]/Hz</span>
 
 <span class="comment">% Now we calibrate in terms of meters.</span>
 
-FMtoDIFF = FMtoASQ ./ ASQcalmeters; <span class="comment">% units of m/Hz</span>
-FMtoCOMM = FMtoREFLI ./ REFLIcalmeters; <span class="comment">% units of m/Hz</span>
+FMtoDIFFcal = FMtoDIFF ./ DIFFcalmeters; <span class="comment">% units of m/Hz</span>
+FMtoCOMMcal = FMtoCOMM ./ COMMcalmeters; <span class="comment">% units of m/Hz</span>
 
 <span class="comment">%plot comparison</span>
 
 figure(2)
 subplot(2,1,1)
-loglog(f,abs(FMtoDIFF),<span class="string">'r'</span>,f,abs(FMtoCOMM),<span class="string">'b'</span>);
+loglog(f,abs(FMtoDIFFcal),<span class="string">'r'</span>,f,abs(FMtoCOMMcal),<span class="string">'b'</span>);
 title(<span class="string">'Frequency Noise Coupling'</span>)
 ylabel(<span class="string">'Magnitude (m/Hz)'</span>)
 legend(<span class="string">'DIFF'</span>,<span class="string">'COMM'</span>)
 xlim([fLow fHigh])
 grid <span class="string">on</span>
 subplot(2,1,2)
-semilogx(f,180/pi*angle(FMtoDIFF),<span class="string">'r'</span>,f,180/pi*angle(FMtoCOMM),<span class="string">'b'</span>);
+semilogx(f,180/pi*angle(FMtoDIFFcal),<span class="string">'r'</span>,f,180/pi*angle(FMtoCOMMcal),<span class="string">'b'</span>);
 ylabel(<span class="string">'Phase (degrees)'</span>)
 xlabel(<span class="string">'Frequency (Hz)'</span>)
 xlim([fLow fHigh])
 grid <span class="string">on</span>
-</pre><img vspace="5" hspace="5" src="exampleMICH_02.png" alt=""> <p>In this plot we can see common mode regection of laser frequency noise!</p>
-         <p class="footer"><br>
-            Published with MATLAB&reg; 7.8<br></p>
-      </div>
-      <!--
+</pre><img vspace="5" hspace="5" src="exampleMICH_02.png" alt=""> <p>In this plot we can see common mode regection of laser frequency noise!</p><p class="footer"><br>
+      Published with MATLAB&reg; 7.14<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Power Recycled Michelson Lentickle Example
 % script to calculate loop gains and noise transfer functions for the MICH
@@ -238,33 +223,33 @@ grid on
 % First we will calculate the calibration of AS_Q in DIFF meters, and
 % REFL_I in COMM meters.
 
-ASQcalmeters = pickleTF(results,'MX','AS_Q') - pickleTF(results,'MY','AS_Q'); % units of [AS_Q counts]/m
-REFLIcalmeters = pickleTF(results,'MX','REFL_I') + pickleTF(results,'MY','REFL_I'); % units of [REFL_I counts]/m
+DIFFcalmeters = pickleTF(results,'MX','DIFF') - pickleTF(results,'MY','DIFF'); % units of [DIFF counts]/m
+COMMcalmeters = pickleTF(results,'MX','COMM') + pickleTF(results,'MY','COMM'); % units of [COMM counts]/m
 
 % Now we will calculate the coulping of laser frequency noise to AS_Q and
 % REFL_I. The PM 'mirror' is the phase modulator actuator, we divide by
 % i*f to get frequency.
 
-FMtoASQ = pickleTF(results,'PM','AS_Q') ./ ( 1i * f ); % units of [AS_Q counts]/Hz
-FMtoREFLI = pickleTF(results,'PM','REFL_I') ./ ( 1i * f ); % units of [REFL_I counts]/Hz
+FMtoDIFF = pickleTF(results,'PM','DIFF') ./ ( 1i * f ); % units of [DIFF counts]/Hz
+FMtoCOMM = pickleTF(results,'PM','COMM') ./ ( 1i * f ); % units of [COMM counts]/Hz
 
 % Now we calibrate in terms of meters.
 
-FMtoDIFF = FMtoASQ ./ ASQcalmeters; % units of m/Hz
-FMtoCOMM = FMtoREFLI ./ REFLIcalmeters; % units of m/Hz
+FMtoDIFFcal = FMtoDIFF ./ DIFFcalmeters; % units of m/Hz
+FMtoCOMMcal = FMtoCOMM ./ COMMcalmeters; % units of m/Hz
 
 %plot comparison
 
 figure(2)
 subplot(2,1,1)
-loglog(f,abs(FMtoDIFF),'r',f,abs(FMtoCOMM),'b');
+loglog(f,abs(FMtoDIFFcal),'r',f,abs(FMtoCOMMcal),'b');
 title('Frequency Noise Coupling')
 ylabel('Magnitude (m/Hz)')
 legend('DIFF','COMM')
 xlim([fLow fHigh])
 grid on
 subplot(2,1,2)
-semilogx(f,180/pi*angle(FMtoDIFF),'r',f,180/pi*angle(FMtoCOMM),'b');
+semilogx(f,180/pi*angle(FMtoDIFFcal),'r',f,180/pi*angle(FMtoCOMMcal),'b');
 ylabel('Phase (degrees)')
 xlabel('Frequency (Hz)')
 xlim([fLow fHigh])
@@ -272,6 +257,4 @@ grid on
 %%
 % In this plot we can see common mode regection of laser frequency noise!
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>
