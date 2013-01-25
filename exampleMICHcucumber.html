@@ -6,67 +6,61 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Cucumber control system model for lentickle michelson example</title><meta name="generator" content="MATLAB 7.12"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2011-08-10"><meta name="DC.source" content="exampleMICHcucumber.m"><style type="text/css">
+      --><title>Cucumber control system model for lentickle michelson example</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-01-24"><meta name="DC.source" content="exampleMICHcucumber.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
-body {
-  background-color: white;
-  margin:10px;
-}
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
 
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
 
-h2 {
-  color: #990000;
-  font-size: medium;
-}
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
 
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
 
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
 
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
 
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
 
-pre.error {
-  color: red;
-}
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
 
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
 
   </style></head><body><div class="content"><h1>Cucumber control system model for lentickle michelson example</h1><!--introduction--><p>returns a simple cucmber control system structure for the power recycled michelson example for lentickle. See the michelson example script <a href="exampleMICH.html">here</a>.</p><p>Input: Optickle opt object from lentickle MICH opt example.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Introduction</a></li><li><a href="#3">First Create probeSens</a></li><li><a href="#4">The other boring matrix is mirrDrive</a></li><li><a href="#5">Control System Model</a></li><li><a href="#6">Input Matrix (sensDof)</a></li><li><a href="#7">Control Filters (ctrlFilt)</a></li><li><a href="#8">Output Matrix (dofMirr)</a></li><li><a href="#9">Pendulum compensation (mirrFilt)</a></li><li><a href="#10">Mechanical Response (pendFilt)</a></li><li><a href="#11">Store all the needed variables in the cucumber</a></li><li><a href="#12">Choosing RF demod phases</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> cucumber = exampleMICHcucumber(opt,pos)
-</pre><h2>Introduction<a name="2"></a></h2><p>Here we will describe the 'cucumber,' which is a structure variable containing the model of the control system.</p><p>Lentickle expects a control system made like this one:</p><pre> ---&gt; sensDof -&gt; ctrlFilt -&gt; dofMirr -&gt; mirrFilt -&gt; pendFilt ---
- |                                                             |
- |                                                             |
- ------ probeSens &lt;- [Optickle Model] &lt;- mirrDrive &lt;------------</pre><p>All the components that have Filt in the name represent a 1D array of filters. So if you have 4 DOFs, your ctrlFilt is a 1x4 array of filters.</p><p>pendFilt is intended to represent the true mechanical response of each 'mirror.' (That is, it's the tranfer function between the control signal and the input of the Optickle model, which is meters for mirrors). mirrFilt, on the other hand, is used to represent a 'compensation' filter, which may be an approximation of the inverse of the mechanical response.</p><p>The others are all static matrices, sensDof is commonly known as the 'input matrix' and dofMirr is the 'output matrix.'</p><p>probeSens and mirrDrive are typically matrices of ones and zeros only, and they are typically not square matricies, meaning that there will usually be more 'probes' than 'sensors' and likewise more 'drives' than 'mirrors.' They just allow the user to only deal with a subset of all the probe and drive points that might exist in the Optickle model. (For example you may have made a probe of the field inside some cavity for diagnostics, but it will never be part of your control system, so there will be no corresponding 'sensor' for that 'probe.')</p><p>Normally the overal (open loop) gain of a given degree of freedom would be set simply by the product of the gains around the loop, at times it may be desirable to just choose the unity gain frequency of the loop, this is done using the setUgfDof array. It is a 1xNdof array with the UGF of the nth loop. If you want to ignore a DOF, you can put in NaN and it will just keep the raw loop gain.</p><p>There are also several arrays for storing the names of mirrors, sensors and dofs.</p><pre class="codeinput">    <span class="keyword">if</span> nargin&lt;2
+</pre><h2>Introduction<a name="2"></a></h2><p>Here we will describe the 'cucumber,' which is a structure variable containing the model of the control system.</p><p>Lentickle expects a control system made like this one:</p><pre class="language-matlab">---&gt; sensDof -&gt; ctrlFilt -&gt; dofMirr -&gt; mirrFilt -&gt; pendFilt ---
+|                                                             |
+|                                                             |
+------ probeSens &lt;- [Optickle Model] &lt;- mirrDrive &lt;------------
+</pre><p>All the components that have Filt in the name represent a 1D array of filters. So if you have 4 DOFs, your ctrlFilt is a 1x4 array of filters.</p><p>pendFilt is intended to represent the true mechanical response of each 'mirror.' (That is, it's the tranfer function between the control signal and the input of the Optickle model, which is meters for mirrors). mirrFilt, on the other hand, is used to represent a 'compensation' filter, which may be an approximation of the inverse of the mechanical response.</p><p>The others are all static matrices, sensDof is commonly known as the 'input matrix' and dofMirr is the 'output matrix.'</p><p>probeSens and mirrDrive are typically matrices of ones and zeros only, and they are typically not square matricies, meaning that there will usually be more 'probes' than 'sensors' and likewise more 'drives' than 'mirrors.' They just allow the user to only deal with a subset of all the probe and drive points that might exist in the Optickle model. (For example you may have made a probe of the field inside some cavity for diagnostics, but it will never be part of your control system, so there will be no corresponding 'sensor' for that 'probe.')</p><p>Normally the overal (open loop) gain of a given degree of freedom would be set simply by the product of the gains around the loop, at times it may be desirable to just choose the unity gain frequency of the loop, this is done using the setUgfDof array. It is a 1xNdof array with the UGF of the nth loop. If you want to ignore a DOF, you can put in NaN and it will just keep the raw loop gain.</p><p>There are also several arrays for storing the names of mirrors, sensors and dofs.</p><pre class="codeinput">    <span class="keyword">if</span> nargin&lt;2
         pos = [];
     <span class="keyword">end</span>
 </pre><h2>First Create probeSens<a name="3"></a></h2><p>Our opt model has opt.Nprobe probes, and we will choose just 5 sensors. These will be AS and REFL at RF (I and Q) as well as AS at DC. So probeSens will be a 5xNprobe matrix.</p><p>probeSens is the matrix that translates the probes into the sensors. Let's just make a temporary variable which shows how probes become sensors.</p><pre class="codeinput">                    <span class="comment">%  probes     sensors</span>
@@ -89,6 +83,8 @@ p.footer {
     <span class="comment">% We will also need the list of sensor names</span>
 
     sensNames = probeSensPairs(:,2).';
+</pre><pre class="codeoutput">Error using exampleMICHcucumber (line 77)
+Not enough input arguments.
 </pre><h2>The other boring matrix is mirrDrive<a name="4"></a></h2><pre class="codeinput">                    <span class="comment">%  mirrors  drives driveType</span>
     mirrDrivePairs = {<span class="string">'MX'</span>,    <span class="string">'MX'</span>,   1
                       <span class="string">'MY'</span>,    <span class="string">'MY'</span>,   1
@@ -175,24 +171,8 @@ p.footer {
 
     cucumber = lenticklePhase(cucumber,pos,f0,phaseAS,phaseREFL); <span class="comment">% this changes the opt inside cucumber</span>
 </pre><pre class="codeinput"><span class="keyword">end</span>
-</pre><pre class="codeoutput">
-ans = 
-
-          opt: [1x1 Optickle]
-    probeSens: [5x8 double]
-    sensNames: {'REFL_I'  'REFL_Q'  'AS_I'  'AS_Q'  'AS_DC'}
-    mirrDrive: [8x8 double]
-    mirrNames: {'MX'  'MY'  'BS'  'PR'  'AM'  'PM'  'OSC_AM'  'OSC_PM'}
-      sensDof: [2x5 double]
-     dofNames: {'COMM'  'DIFF'}
-     ctrlFilt: [1x2 struct]
-    setUgfDof: [500 300]
-      dofMirr: [8x2 double]
-     mirrFilt: [1x8 struct]
-     pendFilt: [1x8 struct]
-
 </pre><p class="footer"><br>
-      Published with MATLAB&reg; 7.12<br></p></div><!--
+      Published with MATLAB&reg; 7.14<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Cucumber control system model for lentickle michelson example
 % returns a simple cucmber control system structure for the power
