@@ -2,7 +2,17 @@ function lockPos = lentickleLock(cucumber,errSetPoint,startPos)
     % This function locks the error signals in the DOF basis that are given
     
     % wrap around setOperatingPoint
+    % get the required variables
+    opt = cucumber.opt;
+    vOffset = errSetPoint;
+    mSense = cucumber.sensDof * cucumber.probeSens;
+    mDrive = cucumber.mirrDrive * cucumber.dofMirr;
     
-    return lockPos
+    % make startPos set the initial pos offset
+    opt = setPosOffset(opt,startPos);
+
+    [opt, pos] = setOperatingPoint(opt, mDrive, mSense, vOffset);
+
+    lockPos = pos;
     
 end
