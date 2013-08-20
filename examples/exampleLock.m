@@ -2,6 +2,7 @@
 % scrtipt to demonstrate how to find the operating point where error signals 
 % are nulled.
 
+%% set the paths
 run ../setupLentickle.m
 
 %% Set up optickle model and cucumber
