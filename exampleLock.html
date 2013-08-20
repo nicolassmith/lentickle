@@ -1,0 +1,199 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>exampleLock</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-08-20"><meta name="DC.source" content="exampleLock.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Setpoint locking example</a></li><li><a href="#2">Set up optickle model and cucumber</a></li><li><a href="#3">Use lentickleLock to calculate the POS offset</a></li><li><a href="#4">Calculate transfer functions for the different detunings</a></li><li><a href="#5">Plot the results</a></li></ul></div><h2>Setpoint locking example<a name="1"></a></h2><p>scrtipt to demonstrate how to find the operating point where error signals are nulled.</p><pre class="codeinput">run <span class="string">../setupLentickle.m</span>
+</pre><h2>Set up optickle model and cucumber<a name="2"></a></h2><p>we will use the example fabry perot model that comes with Optickle and create a simple corresponding cucumber</p><pre class="codeinput">cucumber.opt = optFP;
+
+cucumber.sensNames = {<span class="string">'REFL_I'</span>,<span class="string">'REFL_Q'</span>};
+cucumber.probeSens = sparse(2,cucumber.opt.Nprobe);
+cucumber.probeSens(1,getProbeNum(cucumber.opt,<span class="string">'REFL_I'</span>)) = 1;
+cucumber.probeSens(2,getProbeNum(cucumber.opt,<span class="string">'REFL_Q'</span>)) = 1;
+
+cucumber.mirrNames = {<span class="string">'IM'</span>,<span class="string">'EM'</span>};
+cucumber.mirrDrive = sparse(cucumber.opt.Ndrive,2);
+cucumber.mirrDrive(getDriveNum(cucumber.opt,<span class="string">'IX'</span>),1) = 1;
+cucumber.mirrDrive(getDriveNum(cucumber.opt,<span class="string">'EX'</span>),2) = 1;
+
+cucumber.sensDof = [ 1 , 0 ]; <span class="comment">% REFL_I is length sensor</span>
+cucumber.dofNames = {<span class="string">'length'</span>};
+
+cucumber.ctrlFilt = [filtZPK([100],[0],1)];
+cucumber.setUgfDof = [ 1000 ];
+cucumber.dofMirr = [ 0
+                     1 ]; <span class="comment">% length feeds back to ETM</span>
+
+unityFilt = filtZPK([],[],1);
+cucumber.mirrFilt = [ unityFilt , unityFilt ];
+cucumber.pendFilt = [ unityFilt , unityFilt ]; <span class="comment">% for simplicity, the actuator acts directly on position</span>
+</pre><h2>Use lentickleLock to calculate the POS offset<a name="3"></a></h2><pre class="codeinput"><span class="comment">% choose a desired error signal value, we only have one DOF, but in a more</span>
+<span class="comment">% complicated cucumber, this would be a vector of values</span>
+errorOffset = -10;
+
+<span class="comment">% first the zero detuning pos offset</span>
+posZero = lentickleLock(cucumber,0);
+
+<span class="comment">% and the detuned pos offset</span>
+posDetune = lentickleLock(cucumber,errorOffset);
+</pre><h2>Calculate transfer functions for the different detunings<a name="4"></a></h2><pre class="codeinput"><span class="comment">% solve the closed loop system</span>
+f = logspace(-1,3,1000);
+resultsZero = lentickleEngine(cucumber,posZero,f);
+resultsDetune = lentickleEngine(cucumber,posDetune,f);
+
+<span class="comment">% calculate the open loop gain for the length loop</span>
+OLGZero = 1-1./pickleTF(resultsZero,<span class="string">'length'</span>,<span class="string">'length'</span>);
+OLGDetune = 1-1./pickleTF(resultsDetune,<span class="string">'length'</span>,<span class="string">'length'</span>);
+</pre><h2>Plot the results<a name="5"></a></h2><p>We see the detuned cavity shows an optical spring response.</p><pre class="codeinput">figure(34)
+subplot(2,1,1)
+loglog(f,abs(OLGZero),<span class="string">'r'</span>,f,abs(OLGDetune),<span class="string">'b'</span>);
+title(<span class="string">'Open loop gain'</span>)
+ylabel(<span class="string">'Magnitude'</span>)
+legend(<span class="string">'Tuned'</span>,<span class="string">'Detuned'</span>)
+xlim([min(f) max(f)])
+grid <span class="string">on</span>
+subplot(2,1,2)
+semilogx(f,180/pi*angle(OLGZero),<span class="string">'r'</span>,f,180/pi*angle(OLGDetune),<span class="string">'b'</span>);
+ylabel(<span class="string">'Phase (degrees)'</span>)
+xlabel(<span class="string">'Frequency (Hz)'</span>)
+xlim([min(f) max(f)])
+grid <span class="string">on</span>
+</pre><img vspace="5" hspace="5" src="exampleLock_01.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Setpoint locking example
+% scrtipt to demonstrate how to find the operating point where error signals 
+% are nulled.
+
+run ../setupLentickle.m
+
+%% Set up optickle model and cucumber
+% we will use the example fabry perot model that comes with Optickle and 
+% create a simple corresponding cucumber
+cucumber.opt = optFP;
+
+cucumber.sensNames = {'REFL_I','REFL_Q'};
+cucumber.probeSens = sparse(2,cucumber.opt.Nprobe);
+cucumber.probeSens(1,getProbeNum(cucumber.opt,'REFL_I')) = 1;
+cucumber.probeSens(2,getProbeNum(cucumber.opt,'REFL_Q')) = 1;
+
+cucumber.mirrNames = {'IM','EM'};
+cucumber.mirrDrive = sparse(cucumber.opt.Ndrive,2);
+cucumber.mirrDrive(getDriveNum(cucumber.opt,'IX'),1) = 1;
+cucumber.mirrDrive(getDriveNum(cucumber.opt,'EX'),2) = 1;
+
+cucumber.sensDof = [ 1 , 0 ]; % REFL_I is length sensor
+cucumber.dofNames = {'length'};
+
+cucumber.ctrlFilt = [filtZPK([100],[0],1)];
+cucumber.setUgfDof = [ 1000 ];
+cucumber.dofMirr = [ 0 
+                     1 ]; % length feeds back to ETM
+
+unityFilt = filtZPK([],[],1);
+cucumber.mirrFilt = [ unityFilt , unityFilt ];
+cucumber.pendFilt = [ unityFilt , unityFilt ]; % for simplicity, the actuator acts directly on position
+
+%% Use lentickleLock to calculate the POS offset
+
+% choose a desired error signal value, we only have one DOF, but in a more
+% complicated cucumber, this would be a vector of values
+errorOffset = -10;
+
+% first the zero detuning pos offset
+posZero = lentickleLock(cucumber,0);
+
+% and the detuned pos offset
+posDetune = lentickleLock(cucumber,errorOffset);
+
+%% Calculate transfer functions for the different detunings
+
+% solve the closed loop system
+f = logspace(-1,3,1000);
+resultsZero = lentickleEngine(cucumber,posZero,f);
+resultsDetune = lentickleEngine(cucumber,posDetune,f);
+
+% calculate the open loop gain for the length loop
+OLGZero = 1-1./pickleTF(resultsZero,'length','length');
+OLGDetune = 1-1./pickleTF(resultsDetune,'length','length');
+
+%% Plot the results
+% We see the detuned cavity shows an optical spring response.
+
+figure(34)
+subplot(2,1,1)
+loglog(f,abs(OLGZero),'r',f,abs(OLGDetune),'b');
+title('Open loop gain')
+ylabel('Magnitude')
+legend('Tuned','Detuned')
+xlim([min(f) max(f)])
+grid on
+subplot(2,1,2)
+semilogx(f,180/pi*angle(OLGZero),'r',f,180/pi*angle(OLGDetune),'b');
+ylabel('Phase (degrees)')
+xlabel('Frequency (Hz)')
+xlim([min(f) max(f)])
+grid on
+##### SOURCE END #####
+--></body></html>
