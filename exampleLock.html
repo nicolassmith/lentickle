@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>exampleLock</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-08-20"><meta name="DC.source" content="exampleLock.m"><style type="text/css">
+      --><title>Setpoint locking example</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-08-20"><meta name="DC.source" content="exampleLock.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -65,7 +65,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Setpoint locking example</a></li><li><a href="#2">Set up optickle model and cucumber</a></li><li><a href="#3">Use lentickleLock to calculate the POS offset</a></li><li><a href="#4">Calculate transfer functions for the different detunings</a></li><li><a href="#5">Plot the results</a></li></ul></div><h2>Setpoint locking example<a name="1"></a></h2><p>scrtipt to demonstrate how to find the operating point where error signals are nulled.</p><pre class="codeinput">run <span class="string">../setupLentickle.m</span>
+  </style></head><body><div class="content"><h1>Setpoint locking example</h1><!--introduction--><p>scrtipt to demonstrate how to find the operating point where error signals are nulled.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">set the paths</a></li><li><a href="#2">Set up optickle model and cucumber</a></li><li><a href="#3">Use lentickleLock to calculate the POS offset</a></li><li><a href="#4">Calculate transfer functions for the different detunings</a></li><li><a href="#5">Plot the results</a></li></ul></div><h2>set the paths<a name="1"></a></h2><pre class="codeinput">run <span class="string">../setupLentickle.m</span>
 </pre><h2>Set up optickle model and cucumber<a name="2"></a></h2><p>we will use the example fabry perot model that comes with Optickle and create a simple corresponding cucumber</p><pre class="codeinput">cucumber.opt = optFP;
 
 cucumber.sensNames = {<span class="string">'REFL_I'</span>,<span class="string">'REFL_Q'</span>};
@@ -126,6 +126,7 @@ grid <span class="string">on</span>
 % scrtipt to demonstrate how to find the operating point where error signals 
 % are nulled.
 
+%% set the paths
 run ../setupLentickle.m
 
 %% Set up optickle model and cucumber
@@ -195,5 +196,6 @@ ylabel('Phase (degrees)')
 xlabel('Frequency (Hz)')
 xlim([min(f) max(f)])
 grid on
+
 ##### SOURCE END #####
 --></body></html>
