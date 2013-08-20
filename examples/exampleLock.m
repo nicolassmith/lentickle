@@ -29,18 +29,13 @@ cucumber.dofMirr = [ 0
 
 unityFilt = filtZPK([],[],1);
 cucumber.mirrFilt = [ unityFilt , unityFilt ];
-cucumber.pendFilt = [ unityFilt , unityFilt ]; % we're just ignoring the pendulum
-
-%% Find the desired error signal value
-
-[x, sensDC, sigDC, fDC] = lentickleSweep(cucumber,'length',-1e-8,1e-8,100);
-
-dofDC = cucumber.sensDof * sensDC;
-
-% Find the value of the error signal
-errorOffset = -max(dofDC(1,:))/3;
+cucumber.pendFilt = [ unityFilt , unityFilt ]; % for simplicity, the actuator acts directly on position
 
 %% Use lentickleLock to calculate the POS offset
+
+% choose a desired error signal value, we only have one DOF, but in a more
+% complicated cucumber, this would be a vector of values
+errorOffset = -10;
 
 % first the zero detuning pos offset
 posZero = lentickleLock(cucumber,0);
@@ -50,40 +45,23 @@ posDetune = lentickleLock(cucumber,errorOffset);
 
 %% Calculate transfer functions for the different detunings
 
+% solve the closed loop system
 f = logspace(-1,3,1000);
-
 resultsZero = lentickleEngine(cucumber,posZero,f);
 resultsDetune = lentickleEngine(cucumber,posDetune,f);
 
-CLGZero = pickleTF(resultsZero,'length','length');
-CLGDetune = pickleTF(resultsDetune,'length','length');
+% calculate the open loop gain for the length loop
 OLGZero = 1-1./pickleTF(resultsZero,'length','length');
 OLGDetune = 1-1./pickleTF(resultsDetune,'length','length');
-tfZero = pickleTF(resultsZero,'EM','length')./CLGZero;
-tfDetune = pickleTF(resultsDetune,'EM','length')./CLGDetune;
-%tfZero = pickleTF(resultsZero,'length','EM','ol');
-%tfDetune = pickleTF(resultsDetune,'length','EM','ol');
 
-figure(33)
-subplot(2,1,1)
-loglog(f,abs(tfZero),'r',f,abs(tfDetune),'b');
-title('length sensor response to end mirror drive (loop removed)')
-ylabel('Magnitude (m/Hz)')
-legend('Tuned','Detuned')
-xlim([min(f) max(f)])
-grid on
-subplot(2,1,2)
-semilogx(f,180/pi*angle(tfZero),'r',f,180/pi*angle(tfDetune),'b');
-ylabel('Phase (degrees)')
-xlabel('Frequency (Hz)')
-xlim([min(f) max(f)])
-grid on
+%% Plot the results
+% We see the detuned cavity shows an optical spring response.
 
 figure(34)
 subplot(2,1,1)
 loglog(f,abs(OLGZero),'r',f,abs(OLGDetune),'b');
 title('Open loop gain')
-ylabel('Magnitude (m/Hz)')
+ylabel('Magnitude')
 legend('Tuned','Detuned')
 xlim([min(f) max(f)])
 grid on
