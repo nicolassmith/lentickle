@@ -24,7 +24,8 @@ cucumber.dofNames = {'length'};
 
 cucumber.ctrlFilt = [filtZPK([100],[0],1)];
 cucumber.setUgfDof = [ 1000 ];
-cucumber.dofMirr = [ -1 ; 1 ]; % length feeds back to ETM
+cucumber.dofMirr = [ 0 
+                     1 ]; % length feeds back to ETM
 
 unityFilt = filtZPK([],[],1);
 cucumber.mirrFilt = [ unityFilt , unityFilt ];
@@ -49,24 +50,45 @@ posDetune = lentickleLock(cucumber,errorOffset);
 
 %% Calculate transfer functions for the different detunings
 
-f = logspace(-1,4,1000);
+f = logspace(-1,3,1000);
 
 resultsZero = lentickleEngine(cucumber,posZero,f);
 resultsDetune = lentickleEngine(cucumber,posDetune,f);
 
-tfZero = 1-1./pickleTF(resultsZero,'length','length');
-tfDetune = 1-1./pickleTF(resultsDetune,'length','length');
+CLGZero = pickleTF(resultsZero,'length','length');
+CLGDetune = pickleTF(resultsDetune,'length','length');
+OLGZero = 1-1./pickleTF(resultsZero,'length','length');
+OLGDetune = 1-1./pickleTF(resultsDetune,'length','length');
+tfZero = pickleTF(resultsZero,'EM','length')./CLGZero;
+tfDetune = pickleTF(resultsDetune,'EM','length')./CLGDetune;
+%tfZero = pickleTF(resultsZero,'length','EM','ol');
+%tfDetune = pickleTF(resultsDetune,'length','EM','ol');
 
 figure(33)
 subplot(2,1,1)
 loglog(f,abs(tfZero),'r',f,abs(tfDetune),'b');
-title('Length sensor response to end mirror excitation')
+title('length sensor response to end mirror drive (loop removed)')
 ylabel('Magnitude (m/Hz)')
 legend('Tuned','Detuned')
 xlim([min(f) max(f)])
 grid on
 subplot(2,1,2)
 semilogx(f,180/pi*angle(tfZero),'r',f,180/pi*angle(tfDetune),'b');
+ylabel('Phase (degrees)')
+xlabel('Frequency (Hz)')
+xlim([min(f) max(f)])
+grid on
+
+figure(34)
+subplot(2,1,1)
+loglog(f,abs(OLGZero),'r',f,abs(OLGDetune),'b');
+title('Open loop gain')
+ylabel('Magnitude (m/Hz)')
+legend('Tuned','Detuned')
+xlim([min(f) max(f)])
+grid on
+subplot(2,1,2)
+semilogx(f,180/pi*angle(OLGZero),'r',f,180/pi*angle(OLGDetune),'b');
 ylabel('Phase (degrees)')
 xlabel('Frequency (Hz)')
 xlim([min(f) max(f)])
