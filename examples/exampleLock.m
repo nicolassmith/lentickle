@@ -24,7 +24,7 @@ cucumber.sensDof = [ 1 , 0 ]; % REFL_I is length sensor
 cucumber.dofNames = {'length'};
 
 cucumber.ctrlFilt = [filtZPK([100],[0],1)];
-cucumber.setUgfDof = [ 1000 ];
+cucumber.setUgfDof = [ 800 ];
 cucumber.dofMirr = [ 0 
                      1 ]; % length feeds back to ETM
 
@@ -39,17 +39,17 @@ cucumber.pendFilt = [ unityFilt , unityFilt ]; % for simplicity, the actuator ac
 errorOffset = -10;
 
 % first the zero detuning pos offset
-posZero = lentickleLock(cucumber,0);
+cucumberZero = lentickleLock(cucumber,0);
 
 % and the detuned pos offset
-posDetune = lentickleLock(cucumber,errorOffset);
+cucumberDetune = lentickleLock(cucumber,errorOffset);
 
 %% Calculate transfer functions for the different detunings
 
 % solve the closed loop system
 f = logspace(-1,3,1000);
-resultsZero = lentickleEngine(cucumber,posZero,f);
-resultsDetune = lentickleEngine(cucumber,posDetune,f);
+resultsZero = lentickleEngine(cucumberZero,[],f);
+resultsDetune = lentickleEngine(cucumberDetune,[],f);
 
 % calculate the open loop gain for the length loop
 OLGZero = 1-1./pickleTF(resultsZero,'length','length');
