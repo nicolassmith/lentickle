@@ -122,7 +122,7 @@ function rslt = lentickleEngine(lentickle, pos, f, sigAC, mMech)
             diag(hCtrl(fIndex, :));
       
       dofGain = dofGain(m,m);
-      dofSign = sign(real(dofGain));
+      dofSign = sign(imag(dofGain));
       gainCorr(m) = abs(dofGain) * dofSign;
       
       % divide out the gain to make it 1 at the desired frequency
